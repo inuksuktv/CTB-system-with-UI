@@ -87,6 +87,7 @@ public class BattleStateMachine : MonoBehaviour
                         readyUnits.Add(unit);
                     }
                 }
+                // Sort readyUnits
                 readyUnits.Sort(delegate (GameObject a, GameObject b) {
                     return a.GetComponent<UnitStateMachine>().initiative.CompareTo(b.GetComponent<UnitStateMachine>().initiative);
                 });
@@ -157,6 +158,7 @@ public class BattleStateMachine : MonoBehaviour
 
             case BattleState.VictoryCheck:
 
+                // Temporary. Victory conditions should be checked if something dies.
                 battleState = BattleState.AdvanceTime;
 
                 break;
