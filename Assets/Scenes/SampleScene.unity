@@ -123,6 +123,55 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &140344288
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 140344290}
+  - component: {fileID: 140344289}
+  m_Layer: 0
+  m_Name: BattleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &140344289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140344288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7be17d0d896f69d46b3e14a776197ad5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleState: 0
+  turnQueue: []
+  heroesInBattle: []
+  enemiesInBattle: []
+  combatants: []
+  readyUnits: []
+--- !u!4 &140344290
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140344288}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &210650238
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,9 +182,10 @@ GameObject:
   m_Component:
   - component: {fileID: 210650240}
   - component: {fileID: 210650239}
+  - component: {fileID: 210650241}
   m_Layer: 0
-  m_Name: RubyIdleUp1
-  m_TagString: Untagged
+  m_Name: Ruby
+  m_TagString: Hero
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -205,6 +255,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &210650241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210650238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30a6c85c4261bf40bdae3f9db5e729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitName: Ruby
+  currentHP: 0
+  maxHP: 0
+  baseATK: 0
+  currentATK: 0
+  baseDEF: 0
+  currentDEF: 0
+  speed: 22
+  stateCharge: 0
+  fireTokens: 0
+  waterTokens: 0
+  earthTokens: 0
+  skyTokens: 0
+  dualState: 0
+  initiative: 0
+  simulatedInitiative: 0
+  attackList: []
 --- !u!1 &364702536
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,9 +338,10 @@ GameObject:
   m_Component:
   - component: {fileID: 510031847}
   - component: {fileID: 510031846}
+  - component: {fileID: 510031848}
   m_Layer: 0
-  m_Name: TreeBig1
-  m_TagString: Untagged
+  m_Name: Tree
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -331,6 +411,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &510031848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510031845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30a6c85c4261bf40bdae3f9db5e729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitName: Tree
+  currentHP: 0
+  maxHP: 0
+  baseATK: 0
+  currentATK: 0
+  baseDEF: 0
+  currentDEF: 0
+  speed: 19
+  stateCharge: 0
+  fireTokens: 0
+  waterTokens: 0
+  earthTokens: 0
+  skyTokens: 0
+  dualState: 0
+  initiative: 0
+  simulatedInitiative: 0
+  attackList: []
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -6548,9 +6657,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1156119361}
   - component: {fileID: 1156119360}
+  - component: {fileID: 1156119362}
   m_Layer: 0
-  m_Name: GrassSmall
-  m_TagString: Untagged
+  m_Name: Grass
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6620,6 +6730,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1156119362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156119359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30a6c85c4261bf40bdae3f9db5e729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitName: Grass
+  currentHP: 0
+  maxHP: 0
+  baseATK: 0
+  currentATK: 0
+  baseDEF: 0
+  currentDEF: 0
+  speed: 17
+  stateCharge: 0
+  fireTokens: 0
+  waterTokens: 0
+  earthTokens: 0
+  skyTokens: 0
+  dualState: 0
+  initiative: 0
+  simulatedInitiative: 0
+  attackList: []
 --- !u!1 &1178996228
 GameObject:
   m_ObjectHideFlags: 0
@@ -6630,9 +6769,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1178996230}
   - component: {fileID: 1178996229}
+  - component: {fileID: 1178996231}
   m_Layer: 0
-  m_Name: LotusFlower
-  m_TagString: Untagged
+  m_Name: Lotus
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6702,6 +6842,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1178996231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178996228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30a6c85c4261bf40bdae3f9db5e729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitName: Lotus
+  currentHP: 0
+  maxHP: 0
+  baseATK: 0
+  currentATK: 0
+  baseDEF: 0
+  currentDEF: 0
+  speed: 18
+  stateCharge: 0
+  fireTokens: 0
+  waterTokens: 0
+  earthTokens: 0
+  skyTokens: 0
+  dualState: 0
+  initiative: 0
+  simulatedInitiative: 0
+  attackList: []
 --- !u!1 &1576537260
 GameObject:
   m_ObjectHideFlags: 0
@@ -6712,9 +6881,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1576537262}
   - component: {fileID: 1576537261}
+  - component: {fileID: 1576537263}
   m_Layer: 0
-  m_Name: MrClockworkIdleUp
-  m_TagString: Untagged
+  m_Name: Clockwork
+  m_TagString: Hero
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6784,6 +6954,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1576537263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576537260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30a6c85c4261bf40bdae3f9db5e729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitName: Clockwork
+  currentHP: 0
+  maxHP: 0
+  baseATK: 0
+  currentATK: 0
+  baseDEF: 0
+  currentDEF: 0
+  speed: 21
+  stateCharge: 0
+  fireTokens: 0
+  waterTokens: 0
+  earthTokens: 0
+  skyTokens: 0
+  dualState: 0
+  initiative: 0
+  simulatedInitiative: 0
+  attackList: []
 --- !u!1 &2093438165
 GameObject:
   m_ObjectHideFlags: 0
@@ -6794,9 +6993,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2093438167}
   - component: {fileID: 2093438166}
+  - component: {fileID: 2093438168}
   m_Layer: 0
-  m_Name: JambiSheet_0
-  m_TagString: Untagged
+  m_Name: Jambi
+  m_TagString: Hero
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6866,3 +7066,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2093438168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093438165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30a6c85c4261bf40bdae3f9db5e729e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitName: Jambi
+  currentHP: 0
+  maxHP: 0
+  baseATK: 0
+  currentATK: 0
+  baseDEF: 0
+  currentDEF: 0
+  speed: 20
+  stateCharge: 0
+  fireTokens: 0
+  waterTokens: 0
+  earthTokens: 0
+  skyTokens: 0
+  dualState: 0
+  initiative: 0
+  simulatedInitiative: 0
+  attackList: []
