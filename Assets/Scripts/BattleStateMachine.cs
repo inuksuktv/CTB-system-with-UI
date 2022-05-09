@@ -20,6 +20,8 @@ public class BattleStateMachine : MonoBehaviour
     public List<GameObject> combatants = new List<GameObject>();
     public List<GameObject> readyUnits = new List<GameObject>();
 
+    private float turnThreshold = 100f;
+
     void Start()
     {
         battleState = BattleState.TakeCommand;
@@ -31,34 +33,44 @@ public class BattleStateMachine : MonoBehaviour
         combatants.AddRange(heroesInBattle);
         combatants.AddRange(enemiesInBattle);
 
+
         // Populate the turnQueue.
         while (turnQueue.Count < 10) {
+            
             foreach (GameObject unit in combatants)
             {
-                // Take the unit's current initiative and add speed to get simulatedInitiative.
                 BaseUnit script = unit.GetComponent<BaseUnit>();
                 script.simulatedInitiative = script.initiative;
+            }
+
+            foreach (GameObject unit in combatants)
+            {
+                // Add speed to the unit's initiative to simulate the turn order.
+                BaseUnit script = unit.GetComponent<BaseUnit>();
                 script.simulatedInitiative += script.speed;
 
-                // If the unit's simulatedInitiative passes the threshold, add it to readyUnits and subtract the threshold value.
-                if (script.simulatedInitiative >= 100) {
-                    script.simulatedInitiative -= 100;
+                // If the unit's turn comes up...
+                if (script.simulatedInitiative >= turnThreshold) {
+
+                    // ...Then add the unit to readyUnits and roll over its initiative.
                     readyUnits.Add(unit);
+                    script.simulatedInitiative -= turnThreshold;
                 }
             }
 
+            // If any units' turns came up this pass through the loop...
             if (readyUnits.Count > 0) {
 
-                // Sort readyUnits, putting the unit with highest overflow simulatedInitiative first.
+                // Sort readyUnits by initiative.
                 readyUnits.Sort(delegate(GameObject a, GameObject b) {
-                    return a.GetComponent<BaseUnit>().simulatedInitiative.CompareTo(b.GetComponent<BaseUnit>().simulatedInitiative);});
-                readyUnits.Reverse();
-
-                // Pop the units off readyUnits and add them to the turnQueue.
-                while (readyUnits.Count > 0) {
-                    turnQueue.Add(readyUnits[0]);
-                    readyUnits.RemoveAt(0);
+                    return a.GetComponent<BaseUnit>().simulatedInitiative.CompareTo(b.GetComponent<BaseUnit>().simulatedInitiative);
+                });
+                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow initiative acts first.
+                for (int i = readyUnits.Count; i > 0; i--) {
+                    turnQueue.Add(readyUnits[i-1]);
                 }
+                // Clear the list.
+                readyUnits.Clear();
             }
         }
     }
