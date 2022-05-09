@@ -20,6 +20,8 @@ public class UnitStateMachine : BaseUnit
     private float animationSpeed = 20f;
     protected Vector2 startPosition;
 
+    protected bool alive = true;
+
     void Start()
     {
         turnState = TurnState.Idle;
@@ -48,7 +50,7 @@ public class UnitStateMachine : BaseUnit
 
             case TurnState.Dead:
 
-
+                DieAndCleanup();
 
                 break;
         }
@@ -58,6 +60,26 @@ public class UnitStateMachine : BaseUnit
     {
         attackTarget = BSM.heroesInBattle[Random.Range(0, BSM.heroesInBattle.Count)];
         turnState = TurnState.Acting;
+    }
+
+    protected virtual void DieAndCleanup()
+    {
+        if (!alive) { return; }
+        else {
+            tag = "DeadUnit";
+
+            BSM.enemiesInBattle.Remove(gameObject);
+            BSM.combatants.Remove(gameObject);
+
+            GetComponent<SpriteRenderer>().color = Color.black;
+
+            // Recalculate the turnQueue. Is it finally time to grapple with the GUI?
+            BSM.turnQueue.Remove(gameObject);
+
+            alive = false;
+
+            BSM.battleState = BattleStateMachine.BattleState.VictoryCheck;
+        }
     }
 
     private IEnumerator TimeForAction()
@@ -73,6 +95,8 @@ public class UnitStateMachine : BaseUnit
 
         yield return new WaitForSeconds(0.5f);
 
+        DoDamage(attackList[0]);
+
         Vector2 firstPosition = startPosition;
         while (MoveBack(firstPosition)) { yield return null; }
 
@@ -83,6 +107,22 @@ public class UnitStateMachine : BaseUnit
         initiative -= BSM.turnThreshold;
 
         turnState = TurnState.Idle;
+    }
+
+    private void DoDamage (Attack attack)
+    {
+        float calcDamage = currentATK + attack.attackDamage;
+        attackTarget.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
+        Debug.Log(unitName + " deals " + calcDamage + " damage to " + attackTarget.GetComponent<UnitStateMachine>().unitName + " with " + attack.attackName);
+    }
+
+    private void TakeDamage(float damageAmount)
+    {
+        currentHP -= damageAmount;
+        if (currentHP <= 0) {
+            currentHP = 0;
+            turnState = TurnState.Dead;
+        }
     }
 
     private bool MoveToTarget(Vector2 target)

@@ -231,7 +231,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300052, guid: c1dbff5bcb29cdd4bbb8de3a29f2328c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.49056602, g: 0.3157274, b: 0.2425062, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -268,12 +268,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Ruby
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 60
+  maxHP: 60
+  baseATK: 10
+  currentATK: 10
+  baseDEF: 5
+  currentDEF: 5
   speed: 22
   stateCharge: 0
   fireTokens: 0
@@ -283,7 +283,10 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: b59a5c3b67612c848a8d9a3e47fea859, type: 2}
+  - {fileID: 11400000, guid: 520cb0d2964d67a4faf682e79d17341c, type: 2}
+  - {fileID: 11400000, guid: 099ee2d5c06f09242ad86e83fe9a50a4, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!1 &364702536
@@ -426,12 +429,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Tree
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 80
+  maxHP: 80
+  baseATK: 15
+  currentATK: 15
+  baseDEF: 7
+  currentDEF: 7
   speed: 19
   stateCharge: 0
   fireTokens: 0
@@ -441,7 +444,8 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: b59a5c3b67612c848a8d9a3e47fea859, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!1 &519420028
@@ -6682,12 +6686,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Strawberry
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 60
+  maxHP: 60
+  baseATK: 10
+  currentATK: 10
+  baseDEF: 5
+  currentDEF: 5
   speed: 16
   stateCharge: 0
   fireTokens: 0
@@ -6697,7 +6701,10 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: 9600fd7de714d554ab872b9a2f61f602, type: 2}
+  - {fileID: 11400000, guid: 58d8af15bcee84749b195773de0ccb72, type: 2}
+  - {fileID: 11400000, guid: b0833807179de724fa6e42576c0a6e37, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!212 &1148669289
@@ -6741,7 +6748,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 00e89d1057578a342b22583144a5ee03, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.9387393, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6861,12 +6868,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Grass
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 40
+  maxHP: 40
+  baseATK: 10
+  currentATK: 10
+  baseDEF: 5
+  currentDEF: 5
   speed: 17
   stateCharge: 0
   fireTokens: 0
@@ -6876,7 +6883,8 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: 035fd2c6be75af742819d2d244dce2ce, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!1 &1178996228
@@ -6975,12 +6983,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Lotus
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 40
+  maxHP: 40
+  baseATK: 10
+  currentATK: 10
+  baseDEF: 5
+  currentDEF: 5
   speed: 18
   stateCharge: 0
   fireTokens: 0
@@ -6990,7 +6998,8 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: 9600fd7de714d554ab872b9a2f61f602, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!1 &1576537260
@@ -7052,7 +7061,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300028, guid: 651c4abeb0812e74685da0e5a31c8dff, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.4408739, g: 0.40943396, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7089,12 +7098,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Clockwork
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 60
+  maxHP: 60
+  baseATK: 10
+  currentATK: 10
+  baseDEF: 5
+  currentDEF: 5
   speed: 21
   stateCharge: 0
   fireTokens: 0
@@ -7104,7 +7113,10 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: ab9f02ab62763334283f92e12fafbf7d, type: 2}
+  - {fileID: 11400000, guid: 035fd2c6be75af742819d2d244dce2ce, type: 2}
+  - {fileID: 11400000, guid: 4ac2fd6d75a419141995e55ab3f68250, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!1 &2093438165
@@ -7166,7 +7178,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -8357743652229098784, guid: 255841382d607e24a8317d9ab167f414, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -7203,12 +7215,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Jambi
-  currentHP: 0
-  maxHP: 0
-  baseATK: 0
-  currentATK: 0
-  baseDEF: 0
-  currentDEF: 0
+  currentHP: 60
+  maxHP: 60
+  baseATK: 10
+  currentATK: 10
+  baseDEF: 5
+  currentDEF: 5
   speed: 20
   stateCharge: 0
   fireTokens: 0
@@ -7218,6 +7230,9 @@ MonoBehaviour:
   dualState: 0
   initiative: 0
   simulatedInitiative: 0
-  attackList: []
+  attackList:
+  - {fileID: 11400000, guid: 745235bb9635cad48b8668db1503a270, type: 2}
+  - {fileID: 11400000, guid: db7cadfadfee40f41b14183845424362, type: 2}
+  - {fileID: 11400000, guid: 2dd6bf7669b7f5840b599ad88e06b105, type: 2}
   turnState: 0
   attackTarget: {fileID: 0}

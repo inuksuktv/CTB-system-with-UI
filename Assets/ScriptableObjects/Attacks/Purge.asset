@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: Purge
   attackDescription: Remove impurities.
-  fireTokens: -1
+  fireTokens: 1
   waterTokens: -2
   earthTokens: -1
   airTokens: -1

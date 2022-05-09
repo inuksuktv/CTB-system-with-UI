@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 517ae048197a7bb42a5e3548edd54cfe, type: 3}
   m_Name: Tailwind
   m_EditorClassIdentifier: 
-  attackName: 
-  attackDescription: 
+  attackName: Tailwind
+  attackDescription: May the wind be always at your back.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 0
-  airTokens: 0
-  attackDamage: 0
+  airTokens: 2
+  attackDamage: 10

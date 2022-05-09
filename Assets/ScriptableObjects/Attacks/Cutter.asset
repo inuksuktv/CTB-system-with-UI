@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 517ae048197a7bb42a5e3548edd54cfe, type: 3}
   m_Name: Cutter
   m_EditorClassIdentifier: 
-  attackName: 
-  attackDescription: 
+  attackName: Cutter
+  attackDescription: Shoot the breeze.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 0
-  airTokens: 0
-  attackDamage: 0
+  airTokens: 1
+  attackDamage: 10
