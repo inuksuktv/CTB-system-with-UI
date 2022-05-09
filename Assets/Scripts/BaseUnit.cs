@@ -13,5 +13,5 @@ public class BaseUnit : MonoBehaviour
 
     public double initiative, simulatedInitiative;
 
-    public List<BaseAttack> attackList = new List<BaseAttack>();
+    public List<Attack> attackList = new List<Attack>();
 }
