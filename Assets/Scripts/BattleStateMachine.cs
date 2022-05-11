@@ -32,7 +32,7 @@ public class BattleStateMachine : MonoBehaviour
 
     // List of heroes ready for input. Used for GUI.
     public List<GameObject> heroesToManage = new List<GameObject>();
-    private AttackHandler heroChoice;
+    public AttackHandler heroChoice;
 
     // Time simulation.
     public float turnThreshold = 100f;
@@ -269,12 +269,16 @@ public class BattleStateMachine : MonoBehaviour
                     activePanel = battleCanvas.transform.Find(activeHero.name + "Panel").gameObject;
                     activePanel.SetActive(true);
 
-                    int arrowCounter = 0;
-                    // Find the buttons and add a listener.
-                    foreach (RectTransform child in activePanel.transform)
+                    // Add a listener to each button which will record some attack information and change the GUI.
+                    List<Button> buttons = new List<Button>(activePanel.GetComponentsInChildren<Button>());
+
+                    int index = 0;
+                    foreach (Button button in buttons)
                         {
-                        child.GetComponent<Button>().onClick.AddListener(() => Input1(activeHero, child, arrowCounter));
-                        arrowCounter++;
+                        RectTransform buttonRT = button.GetComponent<RectTransform>();
+                        Attack attack = activeHero.GetComponent<UnitStateMachine>().attackList[index];
+                        button.onClick.AddListener(() => Input1(activeHero, buttonRT, attack));
+                        index++;
                         }
 
                     // Wait for the player's input.
@@ -290,13 +294,9 @@ public class BattleStateMachine : MonoBehaviour
         }
     }
 
-    private void Input1(GameObject unit, Transform arrow, int arrowCounter)
+    private void Input1(GameObject unit, Transform arrow, Attack attack)
     {
         heroChoice = new AttackHandler();
-
-        // Find the attack. We are reading the hero's attackList in order here.
-        Attack attack = unit.GetComponent<UnitStateMachine>().attackList[arrowCounter];
-        Debug.Log(attack.name);
 
         // Fill what fields we can for heroChoice.
         heroChoice.attackerName = unit.name;
@@ -311,10 +311,14 @@ public class BattleStateMachine : MonoBehaviour
         foreach (RectTransform child in arrow.parent.gameObject.transform) {
             Image image = child.gameObject.GetComponent<Image>();
             image.enabled = false;
+            Text buttonText = child.gameObject.GetComponentInChildren<Text>();
+            buttonText.enabled = false;
         }
 
         // Show the button that was clicked again.
         Image arrowImage = arrow.GetComponent<Image>();
         arrowImage.enabled = true;
+        Text text = arrow.GetComponentInChildren<Text>();
+        text.enabled = true;
     }
 }
