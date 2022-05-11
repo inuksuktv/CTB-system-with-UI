@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleStateMachine : MonoBehaviour
 {
@@ -14,25 +15,70 @@ public class BattleStateMachine : MonoBehaviour
     }
     public BattleState battleState;
 
+    public enum HeroGUI
+    {
+        Available,
+        Idle,
+        Done
+    }
+    public HeroGUI heroGUI;
+
+    // Lists for the battle logic.
     public List<GameObject> turnQueue = new List<GameObject>();
     public List<GameObject> heroesInBattle = new List<GameObject>();
     public List<GameObject> enemiesInBattle = new List<GameObject>();
     public List<GameObject> combatants = new List<GameObject>();
     private List<GameObject> readyUnits = new List<GameObject>();
 
+    // List of heroes ready for input. Used for GUI.
+    public List<GameObject> heroesToManage = new List<GameObject>();
+    private AttackHandler heroChoice;
+
+    // Time simulation.
     public float turnThreshold = 100f;
     private bool wasSimulated;
 
+    // GUI objects
+    private GameObject activeHero;
+    private GameObject activePanel;
+    [SerializeField] private GameObject heroPanelPrefab;
+    [SerializeField] private RectTransform battleCanvas;
+    [SerializeField] private GameObject infoBox;
+    private RectTransform heroPanelRT;
+    private Vector2 screenPoint;
+    public List<GameObject> heroPanels = new List<GameObject>();
+
     void Start()
     {
-        battleState = BattleState.AdvanceTime;
-
         // Find heroes and enemies in the scene with tags. Later we can replace these by reading the information from the GameManager during Awake().
         heroesInBattle.AddRange(GameObject.FindGameObjectsWithTag("Hero"));
         enemiesInBattle.AddRange(GameObject.FindGameObjectsWithTag("Unit"));
 
         combatants.AddRange(heroesInBattle);
         combatants.AddRange(enemiesInBattle);
+
+        // Create and place GUI Hero panels.
+        foreach (GameObject hero in heroesInBattle) {
+            // For each new panel, set its parent as battleCanvas and get the RectTransform of the panel.
+            GameObject newPanel = Instantiate(heroPanelPrefab);
+            newPanel.name = hero.name + "Panel";
+            newPanel.transform.SetParent(battleCanvas);
+            heroPanelRT = newPanel.GetComponent<RectTransform>();
+
+            // Deactivate panel and add to heroPanels list.
+            newPanel.SetActive(false);
+            heroPanels.Add(newPanel);
+
+            // Calculate screen position of hero (not rectTransform).
+            screenPoint = Camera.main.WorldToScreenPoint(hero.transform.position);
+
+            // Convert screen position to Canvas space (leave camera null if Screen Space Overlay).
+            Vector2 canvasPoint;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out canvasPoint);
+
+            // Position the panel.
+            heroPanelRT.localPosition = canvasPoint;
+        }
 
         // Prepare the units' simulatedInitiative. 
         foreach (GameObject unit in combatants)
@@ -43,6 +89,7 @@ public class BattleStateMachine : MonoBehaviour
 
         // Populate the turnQueue.
         while (turnQueue.Count < 10) {
+            // Simulate time.
             foreach (GameObject unit in combatants)
             {
                 // Add speed to the unit's simulatedInitiative to simulate the turn order.
@@ -72,6 +119,10 @@ public class BattleStateMachine : MonoBehaviour
                 readyUnits.Clear();
             }
         }
+
+        // Start the battle.
+        battleState = BattleState.AdvanceTime;
+        heroGUI = HeroGUI.Available;
     }
 
     void Update()
@@ -171,6 +222,7 @@ public class BattleStateMachine : MonoBehaviour
 
                     // Refresh the GUI. Not yet implemented.
 
+                    // Play the next turn.
                     battleState = BattleState.AdvanceTime;
                 }
 
@@ -205,5 +257,64 @@ public class BattleStateMachine : MonoBehaviour
 
                 break;
         }
+
+        switch (heroGUI) {
+            case (HeroGUI.Available):
+
+                if (heroesToManage.Count > 0)
+                    {
+                    activeHero = heroesToManage[0];
+
+                    // Get the hero's input panel.
+                    activePanel = battleCanvas.transform.Find(activeHero.name + "Panel").gameObject;
+                    activePanel.SetActive(true);
+
+                    int arrowCounter = 0;
+                    // Find the buttons and add a listener.
+                    foreach (RectTransform child in activePanel.transform)
+                        {
+                        child.GetComponent<Button>().onClick.AddListener(() => Input1(activeHero, child, arrowCounter));
+                        arrowCounter++;
+                        }
+
+                    // Wait for the player's input.
+                    heroGUI = HeroGUI.Idle;
+                }
+
+                break;
+
+            case (HeroGUI.Idle):
+                break;
+            case (HeroGUI.Done):
+                break;
+        }
+    }
+
+    private void Input1(GameObject unit, Transform arrow, int arrowCounter)
+    {
+        heroChoice = new AttackHandler();
+
+        // Find the attack. We are reading the hero's attackList in order here.
+        Attack attack = unit.GetComponent<UnitStateMachine>().attackList[arrowCounter];
+        Debug.Log(attack.name);
+
+        // Fill what fields we can for heroChoice.
+        heroChoice.attackerName = unit.name;
+        heroChoice.description = attack.description;
+        heroChoice.chosenAttack = attack;
+        heroChoice.attacker = unit;
+
+        // Send the description to the infoBox.
+        //UpDateInfoBox(attack.description);
+
+        // Hide all buttons.
+        foreach (RectTransform child in arrow.parent.gameObject.transform) {
+            Image image = child.gameObject.GetComponent<Image>();
+            image.enabled = false;
+        }
+
+        // Show the button that was clicked again.
+        Image arrowImage = arrow.GetComponent<Image>();
+        arrowImage.enabled = true;
     }
 }

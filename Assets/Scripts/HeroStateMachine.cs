@@ -6,8 +6,8 @@ public class HeroStateMachine : UnitStateMachine
 {
     protected override void ChooseAction()
     {
-        attackTarget = BSM.enemiesInBattle[Random.Range(0, BSM.enemiesInBattle.Count)];
-        turnState = TurnState.Acting;
+        BSM.heroesToManage.Add(gameObject);
+        turnState = TurnState.Idle;
     }
 
     protected override void DieAndCleanup()
