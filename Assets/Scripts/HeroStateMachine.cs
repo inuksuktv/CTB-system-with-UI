@@ -6,6 +6,7 @@ public class HeroStateMachine : UnitStateMachine
 {
     protected override void ChooseAction()
     {
+        BSM.heroesToManage.Clear();
         BSM.heroesToManage.Add(gameObject);
         turnState = TurnState.Idle;
     }

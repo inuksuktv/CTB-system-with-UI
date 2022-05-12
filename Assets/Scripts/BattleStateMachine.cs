@@ -137,8 +137,9 @@ public class BattleStateMachine : MonoBehaviour
                     readyUnits.Clear();
                     foreach (GameObject unit in combatants) {
                         UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                        if (script.initiative > turnThreshold) {
+                        if (script.initiative >= turnThreshold) {
                             readyUnits.Add(unit);
+                            Debug.Log("Added " + unit.name + " to readyUnits.");
                         }
                     }
                     // Sort readyUnits
@@ -222,7 +223,9 @@ public class BattleStateMachine : MonoBehaviour
                 }
                 else {
 
-                    // Refresh the GUI. Not yet implemented.
+                    // Refresh the GUI.
+                    ClearActivePanel();
+                    isChoosingTarget = false;
 
                     // Play the next turn.
                     battleState = BattleState.AdvanceTime;
@@ -290,15 +293,38 @@ public class BattleStateMachine : MonoBehaviour
                 break;
 
             case (HeroGUI.Idle):
+
                 break;
+
             case (HeroGUI.Done):
 
                 activeHero.GetComponent<UnitStateMachine>().CollectAttack(heroChoice);
 
-                heroesToManage.RemoveAt(0);
+                heroesToManage.Remove(activeHero);
+
+                ClearActivePanel();
+
+                heroGUI = HeroGUI.Available;
 
                 break;
         }
+    }
+
+    public void ClearActivePanel()
+    {
+        // Enable all the arrow buttons again in case the player made a selection.
+        foreach (RectTransform child in activePanel.transform) {
+            Image buttonImage = child.GetComponent<Image>();
+            buttonImage.enabled = true;
+            Text buttonText = child.GetComponentInChildren<Text>();
+            buttonText.enabled = true;
+        }
+
+        // Hide the panels and infobox.
+        foreach (GameObject panel in heroPanels) {
+            panel.SetActive(false);
+        }
+        infoBox.SetActive(false);
     }
 
     private void AttackInput(GameObject unit, Transform button, Attack attack)
@@ -338,7 +364,7 @@ public class BattleStateMachine : MonoBehaviour
     {
         heroChoice.target = unit;
         isChoosingTarget = false;
-        infoBox.SetActive(false);
+        ClearActivePanel();
 
         heroGUI = HeroGUI.Done;
     }

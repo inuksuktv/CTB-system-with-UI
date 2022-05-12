@@ -30,17 +30,17 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
     void OnMouseEnter()
     {
         if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
-            Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
+            /*Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
             oldInfoText = infoText.text;
-            infoText.text = gameObject.name;
+            infoText.text = gameObject.name;*/
         }
     }
 
     void OnMouseExit()
     {
         if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
-            Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
-            infoText.text = oldInfoText;
+            /*Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
+            infoText.text = oldInfoText;*/
         }
     }
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
@@ -86,7 +86,9 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
     protected virtual void ChooseAction()
     {
-        attackTarget = BSM.heroesInBattle[Random.Range(0, BSM.heroesInBattle.Count)];
+        myAttack = new AttackHandler();
+        myAttack.target = BSM.heroesInBattle[Random.Range(0, BSM.heroesInBattle.Count)];
+        myAttack.chosenAttack = attackList[Random.Range(0, attackList.Count)];
         turnState = TurnState.Acting;
     }
 
@@ -106,6 +108,8 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
             alive = false;
 
+            BSM.ClearActivePanel();
+
             BSM.battleState = BattleStateMachine.BattleState.VictoryCheck;
         }
     }
@@ -123,25 +127,25 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
         yield return new WaitForSeconds(0.5f);
 
+        initiative -= BSM.turnThreshold;
+
         DoDamage(myAttack);
 
         Vector2 firstPosition = startPosition;
         while (MoveBack(firstPosition)) { yield return null; }
 
-        BSM.battleState = BattleStateMachine.BattleState.AdvanceTime;
-
         actionStarted = false;
 
-        initiative -= BSM.turnThreshold;
-
         turnState = TurnState.Idle;
+
+        BSM.battleState = BattleStateMachine.BattleState.AdvanceTime;
     }
 
     private void DoDamage (AttackHandler attackHandler)
     {
         float calcDamage = currentATK + attackHandler.chosenAttack.attackDamage;
-        attackTarget.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
-        Debug.Log(unitName + " deals " + calcDamage + " damage to " + attackTarget.GetComponent<UnitStateMachine>().unitName + " with " + attackHandler.chosenAttack.attackName);
+        attackHandler.target.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
+        Debug.Log(unitName + " deals " + calcDamage + " damage to " + attackHandler.target.GetComponent<UnitStateMachine>().unitName + " with " + attackHandler.chosenAttack.attackName);
     }
 
     private void TakeDamage(float damageAmount)
