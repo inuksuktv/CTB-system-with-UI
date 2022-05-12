@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Harden
   m_EditorClassIdentifier: 
   attackName: Harden
-  attackDescription: Flesh to stone.
+  description: Flesh to stone.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 2

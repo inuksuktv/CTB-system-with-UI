@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Slam
   m_EditorClassIdentifier: 
   attackName: Slam
-  attackDescription: The earth moves.
+  description: Thank you ma'am.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 1

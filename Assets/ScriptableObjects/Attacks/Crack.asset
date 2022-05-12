@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Crack
   m_EditorClassIdentifier: 
   attackName: Crack
-  attackDescription: Make an opening.
+  description: Don't talk back.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 2

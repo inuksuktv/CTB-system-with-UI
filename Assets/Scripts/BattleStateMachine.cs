@@ -43,10 +43,11 @@ public class BattleStateMachine : MonoBehaviour
     private GameObject activePanel;
     [SerializeField] private GameObject heroPanelPrefab;
     [SerializeField] private RectTransform battleCanvas;
-    [SerializeField] private GameObject infoBox;
+    public GameObject infoBox;
     private RectTransform heroPanelRT;
     private Vector2 screenPoint;
     public List<GameObject> heroPanels = new List<GameObject>();
+    public bool isChoosingTarget = false;
 
     void Start()
     {
@@ -73,8 +74,7 @@ public class BattleStateMachine : MonoBehaviour
             screenPoint = Camera.main.WorldToScreenPoint(hero.transform.position);
 
             // Convert screen position to Canvas space (leave camera null if Screen Space Overlay).
-            Vector2 canvasPoint;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out canvasPoint);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out Vector2 canvasPoint);
 
             // Position the panel.
             heroPanelRT.localPosition = canvasPoint;
@@ -119,6 +119,8 @@ public class BattleStateMachine : MonoBehaviour
                 readyUnits.Clear();
             }
         }
+
+        infoBox.SetActive(false);
 
         // Start the battle.
         battleState = BattleState.AdvanceTime;
@@ -277,7 +279,7 @@ public class BattleStateMachine : MonoBehaviour
                         {
                         RectTransform buttonRT = button.GetComponent<RectTransform>();
                         Attack attack = activeHero.GetComponent<UnitStateMachine>().attackList[index];
-                        button.onClick.AddListener(() => Input1(activeHero, buttonRT, attack));
+                        button.onClick.AddListener(() => AttackInput(activeHero, buttonRT, attack));
                         index++;
                         }
 
@@ -290,35 +292,54 @@ public class BattleStateMachine : MonoBehaviour
             case (HeroGUI.Idle):
                 break;
             case (HeroGUI.Done):
+
+                activeHero.GetComponent<UnitStateMachine>().CollectAttack(heroChoice);
+
+                heroesToManage.RemoveAt(0);
+
                 break;
         }
     }
 
-    private void Input1(GameObject unit, Transform arrow, Attack attack)
+    private void AttackInput(GameObject unit, Transform button, Attack attack)
     {
-        heroChoice = new AttackHandler();
-
-        // Fill what fields we can for heroChoice.
-        heroChoice.attackerName = unit.name;
-        heroChoice.description = attack.description;
-        heroChoice.chosenAttack = attack;
-        heroChoice.attacker = unit;
+        heroChoice = new AttackHandler {
+            // Fill what fields we can for heroChoice. Get the target on next player input.
+            attackerName = unit.name,
+            description = attack.description,
+            chosenAttack = attack,
+            attacker = unit
+        };
 
         // Send the description to the infoBox.
-        //UpDateInfoBox(attack.description);
+        infoBox.SetActive(true);
+        Text infoBoxText = infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
+        infoBoxText.text = heroChoice.description;
 
         // Hide all buttons.
-        foreach (RectTransform child in arrow.parent.gameObject.transform) {
-            Image image = child.gameObject.GetComponent<Image>();
-            image.enabled = false;
+        foreach (RectTransform child in activePanel.transform) {
+            Image buttonImage = child.gameObject.GetComponent<Image>();
+            buttonImage.enabled = false;
             Text buttonText = child.gameObject.GetComponentInChildren<Text>();
             buttonText.enabled = false;
         }
 
         // Show the button that was clicked again.
-        Image arrowImage = arrow.GetComponent<Image>();
-        arrowImage.enabled = true;
-        Text text = arrow.GetComponentInChildren<Text>();
+        Image image = button.GetComponent<Image>();
+        image.enabled = true;
+        Text text = button.GetComponentInChildren<Text>();
         text.enabled = true;
+
+        // Prepare the ClickHandler for TargetInput.
+        isChoosingTarget = true;
+    }
+
+    public void TargetInput(GameObject unit)
+    {
+        heroChoice.target = unit;
+        isChoosingTarget = false;
+        infoBox.SetActive(false);
+
+        heroGUI = HeroGUI.Done;
     }
 }

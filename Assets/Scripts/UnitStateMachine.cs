@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class UnitStateMachine : BaseUnit
+public class UnitStateMachine : BaseUnit, IPointerClickHandler
 {
     protected BattleStateMachine BSM;
 
@@ -15,12 +17,38 @@ public class UnitStateMachine : BaseUnit
     }
     public TurnState turnState;
 
+    private AttackHandler myAttack;
     public GameObject attackTarget;
     protected bool actionStarted;
     private float animationSpeed = 20f;
     protected Vector2 startPosition;
 
+    private string oldInfoText;
+
     protected bool alive = true;
+
+    void OnMouseEnter()
+    {
+        if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
+            Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
+            oldInfoText = infoText.text;
+            infoText.text = gameObject.name;
+        }
+    }
+
+    void OnMouseExit()
+    {
+        if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
+            Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
+            infoText.text = oldInfoText;
+        }
+    }
+    void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+    {
+        if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
+            BSM.TargetInput(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -90,12 +118,12 @@ public class UnitStateMachine : BaseUnit
 
         actionStarted = true;
 
-        Vector2 targetPosition = new Vector2(attackTarget.transform.position.x, attackTarget.transform.position.y);
+        Vector2 targetPosition = new Vector2(myAttack.target.transform.position.x, myAttack.target.transform.position.y);
         while (MoveToTarget(targetPosition)) { yield return null; }
 
         yield return new WaitForSeconds(0.5f);
 
-        DoDamage(attackList[0]);
+        DoDamage(myAttack);
 
         Vector2 firstPosition = startPosition;
         while (MoveBack(firstPosition)) { yield return null; }
@@ -109,11 +137,11 @@ public class UnitStateMachine : BaseUnit
         turnState = TurnState.Idle;
     }
 
-    private void DoDamage (Attack attack)
+    private void DoDamage (AttackHandler attackHandler)
     {
-        float calcDamage = currentATK + attack.attackDamage;
+        float calcDamage = currentATK + attackHandler.chosenAttack.attackDamage;
         attackTarget.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
-        Debug.Log(unitName + " deals " + calcDamage + " damage to " + attackTarget.GetComponent<UnitStateMachine>().unitName + " with " + attack.attackName);
+        Debug.Log(unitName + " deals " + calcDamage + " damage to " + attackTarget.GetComponent<UnitStateMachine>().unitName + " with " + attackHandler.chosenAttack.attackName);
     }
 
     private void TakeDamage(float damageAmount)
@@ -135,5 +163,11 @@ public class UnitStateMachine : BaseUnit
     {
         transform.position = Vector2.MoveTowards(transform.position, target, animationSpeed * Time.deltaTime);
         return !(Mathf.Approximately(transform.position.x - target.x, 0) && Mathf.Approximately(transform.position.y - target.y, 0));
+    }
+
+    public void CollectAttack(AttackHandler attack)
+    {
+        myAttack = attack;
+        turnState = TurnState.Acting;
     }
 }
