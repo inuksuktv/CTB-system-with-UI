@@ -226,9 +226,6 @@ public class BattleStateMachine : MonoBehaviour
                     // Refresh the GUI.
                     ClearActivePanel();
                     isChoosingTarget = false;
-
-                    // Play the next turn.
-                    battleState = BattleState.AdvanceTime;
                 }
 
                 break;
