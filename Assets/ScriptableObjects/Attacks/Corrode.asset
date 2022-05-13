@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Corrode
   m_EditorClassIdentifier: 
   attackName: Corrode
-  attackDescription: Wear and tear.
+  description: Wear and tear.
   fireTokens: 0
   waterTokens: 2
   earthTokens: 0

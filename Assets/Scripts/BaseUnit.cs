@@ -14,4 +14,5 @@ public class BaseUnit : MonoBehaviour
     public double initiative, simulatedInitiative;
 
     public List<Attack> attackList = new List<Attack>();
+    public GameObject portrait;
 }

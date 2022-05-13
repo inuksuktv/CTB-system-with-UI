@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mist
   m_EditorClassIdentifier: 
   attackName: Mist
-  attackDescription: Cool and refreshing.
+  description: Life-giving dew.
   fireTokens: 0
   waterTokens: 1
   earthTokens: 0

@@ -36,6 +36,7 @@ public class BattleStateMachine : MonoBehaviour
 
     // Time simulation.
     public float turnThreshold = 100f;
+    private int turnQueueSize = 7;
     private bool wasSimulated;
 
     // GUI objects
@@ -47,6 +48,7 @@ public class BattleStateMachine : MonoBehaviour
     private RectTransform heroPanelRT;
     private Vector2 screenPoint;
     public List<GameObject> heroPanels = new List<GameObject>();
+    public List<GameObject> portraits = new List<GameObject>();
     public bool isChoosingTarget = false;
 
     void Start()
@@ -88,7 +90,7 @@ public class BattleStateMachine : MonoBehaviour
             }
 
         // Populate the turnQueue.
-        while (turnQueue.Count < 10) {
+        while (turnQueue.Count < turnQueueSize) {
             // Simulate time.
             foreach (GameObject unit in combatants)
             {
@@ -120,6 +122,17 @@ public class BattleStateMachine : MonoBehaviour
             }
         }
 
+        // Get the unit portaits.
+        foreach (GameObject unit in turnQueue) {
+            portraits.Add(unit.GetComponent<UnitStateMachine>().portrait);
+        }
+
+        // Add them to the TurnQueue GUI.
+        foreach (GameObject portrait in portraits) {
+            GameObject newPortrait = Instantiate(portrait);
+            newPortrait.transform.SetParent(battleCanvas.Find("TurnQueue"));
+        }
+
         infoBox.SetActive(false);
 
         // Start the battle.
@@ -139,7 +152,6 @@ public class BattleStateMachine : MonoBehaviour
                         UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
                         if (script.initiative >= turnThreshold) {
                             readyUnits.Add(unit);
-                            Debug.Log("Added " + unit.name + " to readyUnits.");
                         }
                     }
                     // Sort readyUnits
@@ -222,7 +234,6 @@ public class BattleStateMachine : MonoBehaviour
                     battleState = BattleState.Win;
                 }
                 else {
-
                     // Refresh the GUI.
                     ClearActivePanel();
                     isChoosingTarget = false;
@@ -309,12 +320,12 @@ public class BattleStateMachine : MonoBehaviour
 
     public void ClearActivePanel()
     {
-        // Enable all the arrow buttons again in case the player made a selection.
+        // Set all the buttons opaque.
         foreach (RectTransform child in activePanel.transform) {
-            Image buttonImage = child.GetComponent<Image>();
-            buttonImage.enabled = true;
-            Text buttonText = child.GetComponentInChildren<Text>();
-            buttonText.enabled = true;
+            Image buttonImage = child.gameObject.GetComponent<Image>();
+            buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1f);
+            Text buttonText = child.gameObject.GetComponentInChildren<Text>();
+            buttonText.color = new Color(buttonText.color.r, buttonText.color.g, buttonText.color.b, 1f);
         }
 
         // Hide the panels and infobox.
@@ -339,21 +350,21 @@ public class BattleStateMachine : MonoBehaviour
         Text infoBoxText = infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
         infoBoxText.text = heroChoice.description;
 
-        // Hide all buttons.
+        // Set all buttons transparent.
         foreach (RectTransform child in activePanel.transform) {
             Image buttonImage = child.gameObject.GetComponent<Image>();
-            buttonImage.enabled = false;
+            buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 0.5f);
             Text buttonText = child.gameObject.GetComponentInChildren<Text>();
-            buttonText.enabled = false;
+            buttonText.color = new Color(buttonText.color.r, buttonText.color.g, buttonText.color.b, 0.5f);
         }
 
-        // Show the button that was clicked again.
+        // Set the button that was clicked opaque again.
         Image image = button.GetComponent<Image>();
-        image.enabled = true;
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
         Text text = button.GetComponentInChildren<Text>();
-        text.enabled = true;
+        text.color = new Color(text.color.r, text.color.g, text.color.b, 1f);
 
-        // Prepare the ClickHandler for TargetInput.
+        // Turn on the ClickHandler for TargetInput.
         isChoosingTarget = true;
     }
 

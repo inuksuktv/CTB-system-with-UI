@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Flood
   m_EditorClassIdentifier: 
   attackName: Flood
-  attackDescription: Drown the landscape.
+  description: Drown the landscape.
   fireTokens: 0
   waterTokens: 2
   earthTokens: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cutter
   m_EditorClassIdentifier: 
   attackName: Cutter
-  attackDescription: Shoot the breeze.
+  description: Secret technique.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 0
