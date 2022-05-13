@@ -35,8 +35,8 @@ public class BattleStateMachine : MonoBehaviour
     public AttackHandler heroChoice;
 
     // Time simulation.
-    public float turnThreshold = 100f;
-    private int turnQueueSize = 7;
+    public float turnThreshold = 1000f;
+    private readonly int turnQueueTargetSize = 10;
     public List<UnitInitiatives> unitInitiatives = new List<UnitInitiatives>();
 
     // GUI objects
@@ -44,6 +44,7 @@ public class BattleStateMachine : MonoBehaviour
     private GameObject activePanel;
     [SerializeField] private GameObject heroPanelPrefab;
     [SerializeField] private RectTransform battleCanvas;
+    private RectTransform turnQueueRT;
     public GameObject infoBox;
     private RectTransform heroPanelRT;
     private Vector2 screenPoint;
@@ -82,50 +83,7 @@ public class BattleStateMachine : MonoBehaviour
             heroPanelRT.localPosition = canvasPoint;
         }
 
-        PrepareInitiative();
-        readyUnits.Clear();
-
-        // Populate the turnQueue.
-        while (turnQueue.Count < turnQueueSize) {
-            // Simulate time.
-            foreach (UnitInitiatives unit in unitInitiatives)
-            {
-                unit.initiative += unit.speed;
-
-                // If the unit's turn comes up...
-                if (unit.initiative >= turnThreshold) {
-                    // ...then add the unit to readyUnits and roll over its initiative.
-                    readyUnits.Add(unit);
-                    unit.initiative -= turnThreshold;
-                }
-            }
-
-            // Check if any units' turns came up.
-            if (readyUnits.Count > 0) {
-                // Sort readyUnits by initiative.
-                readyUnits.Sort(delegate(UnitInitiatives a, UnitInitiatives b) {
-                    return a.initiative.CompareTo(b.initiative);
-                });
-
-                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow initiative acts first.
-                for (int i = readyUnits.Count; i > 0; i--) {
-                    turnQueue.Add(readyUnits[i-1].unitGO);
-                }
-                // Clear the list.
-                readyUnits.Clear();
-            }
-        }
-
-        // Get the unit portaits.
-        foreach (GameObject unit in turnQueue) {
-            portraits.Add(unit.GetComponent<UnitStateMachine>().portrait);
-        }
-
-        // Add them to the TurnQueue GUI.
-        foreach (GameObject portrait in portraits) {
-            GameObject newPortrait = Instantiate(portrait);
-            newPortrait.transform.SetParent(battleCanvas.Find("TurnQueue"));
-        }
+        turnQueueRT = battleCanvas.Find("TurnQueue").GetComponent<RectTransform>();
 
         infoBox.SetActive(false);
 
@@ -142,38 +100,34 @@ public class BattleStateMachine : MonoBehaviour
                 // Check if the battle was cleared by winning or losing.
                 if (combatants.Count == 0) { battleState = BattleState.Idle; }
 
-                readyUnits.Clear();
+                // Cache unit information.
                 PrepareInitiative();
+
+                // Simulate time and build a turnQueue.
+                GenerateQueue();
+
+                // Send the turnQueue to the GUI.
+                SendPortraitsToGUI();
 
                 // Check if anyone's ready to act.
                 foreach (UnitInitiatives unit in unitInitiatives) {
-                    if (unit.initiative >= 100) {
+                    if (unit.initiative >= turnThreshold) {
                         readyUnits.Add(unit);
                     }
                 }
                 
-                // If no one's ready to act, advance time. Find all turns that would come up over the duration of a 'tick'.
-                if (readyUnits.Count == 0) {
-                    // Simulate time until a turn comes up.
-                    while (readyUnits.Count < 1) {
-                        foreach (UnitInitiatives unit in unitInitiatives) {
-                            unit.initiative += unit.speed;
+                // The actor is the first member of the turnQueue. Get its script.
+                UnitStateMachine actor = turnQueue[0].GetComponent<UnitStateMachine>();
 
-                            // Check if a unit's turn came up and add it to readyUnits.
-                            if (unit.initiative >= turnThreshold) {
-                                readyUnits.Add(unit);
-                            }
-                        }
+                if (actor.initiative <= turnThreshold) {
+                    double initiativeDifference = turnThreshold - actor.initiative;
+                    double ticks = initiativeDifference / actor.speed;
+
+                    foreach (UnitInitiatives unit in unitInitiatives) {
+                        UnitStateMachine script = unit.unitGO.GetComponent<UnitStateMachine>();
+                        script.initiative += script.speed * ticks;    
                     }
                 }
-
-                // Sort readyUnits by initiative.
-                readyUnits.Sort(delegate (UnitInitiatives a, UnitInitiatives b) {
-                    return a.initiative.CompareTo(b.initiative);
-                });
-
-                // The actor is the last member of readyUnits (highest initiative). Get its script.
-                UnitStateMachine actor = readyUnits[readyUnits.Count - 1].unitGO.GetComponent<UnitStateMachine>();
 
                 // Tell the actor to act and wait until you hear back.
                 actor.turnState = UnitStateMachine.TurnState.Choosing;     
@@ -194,7 +148,7 @@ public class BattleStateMachine : MonoBehaviour
                     battleState = BattleState.Win;
                 }
                 else {
-                    // Refresh the GUI.
+                    // Refresh the input GUI.
                     ClearActivePanel();
                     isChoosingTarget = false;
                 }
@@ -352,6 +306,57 @@ public class BattleStateMachine : MonoBehaviour
             currentUnit.initiative = script.initiative;
             currentUnit.speed = script.speed;
             unitInitiatives.Add(currentUnit);
+        }
+    }
+
+    private void GenerateQueue()
+    {
+        turnQueue.Clear();
+        while (turnQueue.Count < turnQueueTargetSize)
+            {
+            readyUnits.Clear();
+
+            // Tick the units forward.
+            foreach (UnitInitiatives unit in unitInitiatives) {
+                unit.initiative += unit.speed;
+
+                // If the unit's turn comes up, add it to the list.
+                if (unit.initiative >= turnThreshold) {
+                    readyUnits.Add(unit);
+                    unit.initiative -= turnThreshold;
+                }
+            }
+
+            // Check if any units' turns came up.
+            if (readyUnits.Count > 0) {
+                // Sort by initiative.
+                readyUnits.Sort(delegate (UnitInitiatives a, UnitInitiatives b) {
+                    return a.initiative.CompareTo(b.initiative);
+                });
+
+                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow initiative acts first.
+                for (int i = readyUnits.Count; i > 0; i--) {
+                    turnQueue.Add(readyUnits[i - 1].unitGO);
+                }
+            }
+        }
+    }
+
+    private void SendPortraitsToGUI()
+    {
+        foreach (RectTransform child in turnQueueRT) {
+            Destroy(child.gameObject);
+        }
+
+        portraits.Clear();
+        foreach (GameObject unit in turnQueue) {
+            portraits.Add(unit.GetComponent<UnitStateMachine>().portrait);
+        }
+
+        // Add them to the TurnQueue GUI.
+        foreach (GameObject portrait in portraits) {
+            GameObject newPortrait = Instantiate(portrait);
+            newPortrait.transform.SetParent(turnQueueRT);
         }
     }
 }
