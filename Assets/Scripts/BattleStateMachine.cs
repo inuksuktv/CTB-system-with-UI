@@ -28,7 +28,7 @@ public class BattleStateMachine : MonoBehaviour
     public List<GameObject> heroesInBattle = new List<GameObject>();
     public List<GameObject> enemiesInBattle = new List<GameObject>();
     public List<GameObject> combatants = new List<GameObject>();
-    private List<GameObject> readyUnits = new List<GameObject>();
+    private List<UnitInitiatives> readyUnits = new List<UnitInitiatives>();
 
     // List of heroes ready for input. Used for GUI.
     public List<GameObject> heroesToManage = new List<GameObject>();
@@ -37,7 +37,7 @@ public class BattleStateMachine : MonoBehaviour
     // Time simulation.
     public float turnThreshold = 100f;
     private int turnQueueSize = 7;
-    private bool wasSimulated;
+    public List<UnitInitiatives> unitInitiatives = new List<UnitInitiatives>();
 
     // GUI objects
     private GameObject activeHero;
@@ -82,40 +82,34 @@ public class BattleStateMachine : MonoBehaviour
             heroPanelRT.localPosition = canvasPoint;
         }
 
-        // Prepare the units' simulatedInitiative. 
-        foreach (GameObject unit in combatants)
-            {
-                UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                script.simulatedInitiative = script.initiative;
-            }
+        PrepareInitiative();
+        readyUnits.Clear();
 
         // Populate the turnQueue.
         while (turnQueue.Count < turnQueueSize) {
             // Simulate time.
-            foreach (GameObject unit in combatants)
+            foreach (UnitInitiatives unit in unitInitiatives)
             {
-                // Add speed to the unit's simulatedInitiative to simulate the turn order.
-                UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                script.simulatedInitiative += script.speed;
+                unit.initiative += unit.speed;
 
                 // If the unit's turn comes up...
-                if (script.simulatedInitiative >= turnThreshold) {
-                    // ...then add the unit to readyUnits and roll over its simulatedInitiative.
+                if (unit.initiative >= turnThreshold) {
+                    // ...then add the unit to readyUnits and roll over its initiative.
                     readyUnits.Add(unit);
-                    script.simulatedInitiative -= turnThreshold;
+                    unit.initiative -= turnThreshold;
                 }
             }
 
             // Check if any units' turns came up.
             if (readyUnits.Count > 0) {
-                // Sort readyUnits by simulatedInitiative.
-                readyUnits.Sort(delegate(GameObject a, GameObject b) {
-                    return a.GetComponent<UnitStateMachine>().simulatedInitiative.CompareTo(b.GetComponent<UnitStateMachine>().simulatedInitiative);
+                // Sort readyUnits by initiative.
+                readyUnits.Sort(delegate(UnitInitiatives a, UnitInitiatives b) {
+                    return a.initiative.CompareTo(b.initiative);
                 });
 
-                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow simulatedInitiative acts first.
+                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow initiative acts first.
                 for (int i = readyUnits.Count; i > 0; i--) {
-                    turnQueue.Add(readyUnits[i-1]);
+                    turnQueue.Add(readyUnits[i-1].unitGO);
                 }
                 // Clear the list.
                 readyUnits.Clear();
@@ -144,79 +138,45 @@ public class BattleStateMachine : MonoBehaviour
     {
         switch (battleState) {
             case BattleState.AdvanceTime:
-                // Check if the list was cleared by battle being won or lost.
-                if (combatants.Count > 0) {
-                    // First check if anyone's ready to act.
-                    readyUnits.Clear();
-                    foreach (GameObject unit in combatants) {
-                        UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                        if (script.initiative >= turnThreshold) {
-                            readyUnits.Add(unit);
-                        }
+
+                // Check if the battle was cleared by winning or losing.
+                if (combatants.Count == 0) { battleState = BattleState.Idle; }
+
+                readyUnits.Clear();
+                PrepareInitiative();
+
+                // Check if anyone's ready to act.
+                foreach (UnitInitiatives unit in unitInitiatives) {
+                    if (unit.initiative >= 100) {
+                        readyUnits.Add(unit);
                     }
-                    // Sort readyUnits
-                    readyUnits.Sort(delegate (GameObject a, GameObject b) {
-                        return a.GetComponent<UnitStateMachine>().initiative.CompareTo(b.GetComponent<UnitStateMachine>().initiative);
-                    });
+                }
+                
+                // If no one's ready to act, advance time. Find all turns that would come up over the duration of a 'tick'.
+                if (readyUnits.Count == 0) {
+                    // Simulate time until a turn comes up.
+                    while (readyUnits.Count < 1) {
+                        foreach (UnitInitiatives unit in unitInitiatives) {
+                            unit.initiative += unit.speed;
 
-                    // If no one's ready to act...
-                    if (readyUnits.Count == 0) {
-
-                        wasSimulated = true;
-
-                        // Decide who acts next by simulating time. Start by preparing simulatedInitiative.
-                        foreach (GameObject unit in combatants) {
-                            UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                            script.simulatedInitiative = script.initiative;
-                        }
-
-                        // Advance simulated time until a turn comes up.
-                        while (readyUnits.Count < 1) {
-                            foreach (GameObject unit in combatants) {
-                                // Add speed to the unit's simulatedInitiative to simulate the turn order.
-                                UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                                script.simulatedInitiative += script.speed;
-
-                                // If the unit's turn comes up...
-                                if (script.simulatedInitiative >= turnThreshold) {
-                                    // ...then add the unit to readyUnits and roll over its simulatedInitiative.
-                                    readyUnits.Add(unit);
-                                    script.simulatedInitiative -= turnThreshold;
-                                }
+                            // Check if a unit's turn came up and add it to readyUnits.
+                            if (unit.initiative >= turnThreshold) {
+                                readyUnits.Add(unit);
                             }
                         }
                     }
-
-                    if (wasSimulated) {
-                        // Sort readyUnits by simulatedInitiative.
-                        readyUnits.Sort(delegate (GameObject a, GameObject b) {
-                            return a.GetComponent<UnitStateMachine>().simulatedInitiative.CompareTo(b.GetComponent<UnitStateMachine>().simulatedInitiative);
-                        });
-                        readyUnits.Reverse();
-                    }
-
-                    UnitStateMachine nextUnit = readyUnits[0].GetComponent<UnitStateMachine>();
-
-                    // Advance time if we need to.
-                    if (wasSimulated) {
-                        // Calculate how many ticks it took for the next turn to occur.
-                        double initiativeDifference = turnThreshold - nextUnit.initiative;
-                        double ticks = initiativeDifference / nextUnit.speed;
-
-                        // Apply those ticks to every unit.
-                        foreach (GameObject unit in combatants) {
-                            UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                            script.initiative += script.speed * ticks;
-                        }
-                    }
-
-                    // Tell the unit to act.
-                    nextUnit.turnState = UnitStateMachine.TurnState.Choosing;
-
-                    // Wait for it to finish.
-                    wasSimulated = false;
                 }
-                
+
+                // Sort readyUnits by initiative.
+                readyUnits.Sort(delegate (UnitInitiatives a, UnitInitiatives b) {
+                    return a.initiative.CompareTo(b.initiative);
+                });
+
+                // The actor is the last member of readyUnits (highest initiative). Get its script.
+                UnitStateMachine actor = readyUnits[readyUnits.Count - 1].unitGO.GetComponent<UnitStateMachine>();
+
+                // Tell the actor to act and wait until you hear back.
+                actor.turnState = UnitStateMachine.TurnState.Choosing;     
                 battleState = BattleState.Idle;
 
                 break;
@@ -321,11 +281,13 @@ public class BattleStateMachine : MonoBehaviour
     public void ClearActivePanel()
     {
         // Set all the buttons opaque.
-        foreach (RectTransform child in activePanel.transform) {
-            Image buttonImage = child.gameObject.GetComponent<Image>();
-            buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1f);
-            Text buttonText = child.gameObject.GetComponentInChildren<Text>();
-            buttonText.color = new Color(buttonText.color.r, buttonText.color.g, buttonText.color.b, 1f);
+        if (activePanel != null) {
+            foreach (RectTransform child in activePanel.transform) {
+                Image buttonImage = child.gameObject.GetComponent<Image>();
+                buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1f);
+                Text buttonText = child.gameObject.GetComponentInChildren<Text>();
+                buttonText.color = new Color(buttonText.color.r, buttonText.color.g, buttonText.color.b, 1f);
+            }
         }
 
         // Hide the panels and infobox.
@@ -375,5 +337,21 @@ public class BattleStateMachine : MonoBehaviour
         ClearActivePanel();
 
         heroGUI = HeroGUI.Done;
+    }
+
+    private void PrepareInitiative()
+    {
+        unitInitiatives.Clear();
+
+        // Read a combatant's fields into a new member of unitInitiatives. 
+        foreach (GameObject combatant in combatants) {
+            UnitInitiatives currentUnit = new UnitInitiatives();
+            UnitStateMachine script = combatant.GetComponent<UnitStateMachine>();
+
+            currentUnit.unitGO = combatant;
+            currentUnit.initiative = script.initiative;
+            currentUnit.speed = script.speed;
+            unitInitiatives.Add(currentUnit);
+        }
     }
 }
