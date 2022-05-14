@@ -36,7 +36,7 @@ public class BattleStateMachine : MonoBehaviour
 
     // Time simulation.
     public float turnThreshold = 1000f;
-    private readonly int turnQueueTargetSize = 10;
+    private readonly int turnQueueTargetSize = 8;
     public List<UnitInitiatives> unitInitiatives = new List<UnitInitiatives>();
 
     // GUI objects
@@ -49,7 +49,8 @@ public class BattleStateMachine : MonoBehaviour
     private RectTransform heroPanelRT;
     private Vector2 screenPoint;
     public List<GameObject> heroPanels = new List<GameObject>();
-    public List<GameObject> portraits = new List<GameObject>();
+    public List<Sprite> portraits = new List<Sprite>();
+    [SerializeField] private GameObject turnPanelPrefab;
     public bool isChoosingTarget = false;
 
     void Start()
@@ -83,7 +84,7 @@ public class BattleStateMachine : MonoBehaviour
             heroPanelRT.localPosition = canvasPoint;
         }
 
-        turnQueueRT = battleCanvas.Find("TurnQueue").GetComponent<RectTransform>();
+        turnQueueRT = battleCanvas.Find("TurnQueueSpacer").GetComponent<RectTransform>();
 
         infoBox.SetActive(false);
 
@@ -354,9 +355,11 @@ public class BattleStateMachine : MonoBehaviour
         }
 
         // Add them to the TurnQueue GUI.
-        foreach (GameObject portrait in portraits) {
-            GameObject newPortrait = Instantiate(portrait);
-            newPortrait.transform.SetParent(turnQueueRT);
+        foreach (Sprite portrait in portraits) {
+            GameObject newPanel = Instantiate(turnPanelPrefab);
+            newPanel.transform.SetParent(turnQueueRT);
+            Image newPanelPortrait = newPanel.transform.Find("Portrait").GetComponent<Image>();
+            newPanelPortrait.sprite = portrait;
         }
     }
 }
