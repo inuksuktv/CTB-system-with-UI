@@ -306,6 +306,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: 14a0f66a7be165c4ba476e3d7c40e390, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!1 &364702536
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,6 +469,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: aeb31def086466745b570d082197ee1f, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!61 &510031849
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6901,7 +6905,7 @@ MonoBehaviour:
   currentATK: 10
   baseDEF: 5
   currentDEF: 5
-  speed: 16
+  speed: 39
   stateCharge: 0
   fireTokens: 0
   waterTokens: 0
@@ -6918,6 +6922,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: 530bcabb1501d8148a19a77465ecac03, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!212 &1148669289
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7112,6 +7118,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: 51dcbb3542a768b49ac5942bd2a0c8bb, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!224 &1156119364
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7349,6 +7357,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: b123bdad4f47a734c80135e456f2d162, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!61 &1178996232
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7494,6 +7504,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: f5ab3f534c1138f4786f23cd74103223, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!1 &2093438165
 GameObject:
   m_ObjectHideFlags: 0
@@ -7613,6 +7625,8 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: dd3885098198d104888439be4c590aba, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
+  damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
+  battleCanvas: {fileID: 1176887649}
 --- !u!1001 &7858563755963004557
 PrefabInstance:
   m_ObjectHideFlags: 0
