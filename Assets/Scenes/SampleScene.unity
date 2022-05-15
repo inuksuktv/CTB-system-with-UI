@@ -171,7 +171,6 @@ MonoBehaviour:
   battleCanvas: {fileID: 1176887649}
   infoBox: {fileID: 828357787}
   heroPanels: []
-  portraits: []
   turnPanelPrefab: {fileID: 415848593370465461, guid: a7627881bc8b2494f81b2c911cfa2f7d, type: 3}
   isChoosingTarget: 0
 --- !u!4 &140344290
@@ -465,7 +464,7 @@ MonoBehaviour:
   simulatedInitiative: 0
   attackList:
   - {fileID: 11400000, guid: b59a5c3b67612c848a8d9a3e47fea859, type: 2}
-  portrait: {fileID: 8848929539169107031, guid: 6dffb2b41fdaa0244ae497f7bd19fa44, type: 3}
+  portrait: {fileID: 21300000, guid: aeb31def086466745b570d082197ee1f, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!61 &510031849
@@ -6850,9 +6849,9 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 7
   m_Spacing: 4
-  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -7110,7 +7109,7 @@ MonoBehaviour:
   simulatedInitiative: 0
   attackList:
   - {fileID: 11400000, guid: 035fd2c6be75af742819d2d244dce2ce, type: 2}
-  portrait: {fileID: 3480386306017794301, guid: 4700daa8e35efdf468a930b8177dd193, type: 3}
+  portrait: {fileID: 21300000, guid: 51dcbb3542a768b49ac5942bd2a0c8bb, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!224 &1156119364
@@ -7185,7 +7184,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 1
+  m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -7347,7 +7346,7 @@ MonoBehaviour:
   simulatedInitiative: 0
   attackList:
   - {fileID: 11400000, guid: 9600fd7de714d554ab872b9a2f61f602, type: 2}
-  portrait: {fileID: 2263425955178284772, guid: f6e1be13004eae64a993c68f8e523629, type: 3}
+  portrait: {fileID: 21300000, guid: b123bdad4f47a734c80135e456f2d162, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
 --- !u!61 &1178996232

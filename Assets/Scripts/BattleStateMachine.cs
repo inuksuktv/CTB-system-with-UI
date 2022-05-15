@@ -49,7 +49,7 @@ public class BattleStateMachine : MonoBehaviour
     private RectTransform heroPanelRT;
     private Vector2 screenPoint;
     public List<GameObject> heroPanels = new List<GameObject>();
-    public List<Sprite> portraits = new List<Sprite>();
+    public List<Portraits> portraits = new List<Portraits>();
     [SerializeField] private GameObject turnPanelPrefab;
     public bool isChoosingTarget = false;
 
@@ -107,9 +107,6 @@ public class BattleStateMachine : MonoBehaviour
                 // Simulate time and build a turnQueue.
                 GenerateQueue();
 
-                // Send the turnQueue to the GUI.
-                SendPortraitsToGUI();
-
                 // Check if anyone's ready to act.
                 foreach (UnitInitiatives unit in unitInitiatives) {
                     if (unit.initiative >= turnThreshold) {
@@ -120,6 +117,7 @@ public class BattleStateMachine : MonoBehaviour
                 // The actor is the first member of the turnQueue. Get its script.
                 UnitStateMachine actor = turnQueue[0].GetComponent<UnitStateMachine>();
 
+                // Apply ticks to each unit's initiative.
                 if (actor.initiative <= turnThreshold) {
                     double initiativeDifference = turnThreshold - actor.initiative;
                     double ticks = initiativeDifference / actor.speed;
@@ -129,6 +127,9 @@ public class BattleStateMachine : MonoBehaviour
                         script.initiative += script.speed * ticks;    
                     }
                 }
+
+                // Send the turnQueue to the GUI.
+                SendPortraitsToGUI();
 
                 // Tell the actor to act and wait until you hear back.
                 actor.turnState = UnitStateMachine.TurnState.Choosing;     
@@ -351,15 +352,25 @@ public class BattleStateMachine : MonoBehaviour
 
         portraits.Clear();
         foreach (GameObject unit in turnQueue) {
-            portraits.Add(unit.GetComponent<UnitStateMachine>().portrait);
+            Portraits newPanel = new Portraits {
+                unitGO = unit,
+                sprite = unit.GetComponent<UnitStateMachine>().portrait
+            };
+            portraits.Add(newPanel);
         }
 
         // Add them to the TurnQueue GUI.
-        foreach (Sprite portrait in portraits) {
+        foreach (Portraits portrait in portraits) {
             GameObject newPanel = Instantiate(turnPanelPrefab);
             newPanel.transform.SetParent(turnQueueRT);
+
             Image newPanelPortrait = newPanel.transform.Find("Portrait").GetComponent<Image>();
-            newPanelPortrait.sprite = portrait;
+            newPanelPortrait.sprite = portrait.sprite;
+
+            Image progressBar = newPanel.transform.Find("ProgressBar").GetComponent<Image>();
+            float calcProgress = (float)portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+            Debug.Log(portrait.unitGO.name + "'s progress is " + calcProgress);
+            progressBar.transform.localScale = new Vector3(Mathf.Clamp(calcProgress, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
         }
     }
 }
