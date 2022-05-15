@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BaseUnit : MonoBehaviour
 {
@@ -14,4 +15,5 @@ public class BaseUnit : MonoBehaviour
     public double initiative, simulatedInitiative;
 
     public List<Attack> attackList = new List<Attack>();
+    public Sprite portrait;
 }

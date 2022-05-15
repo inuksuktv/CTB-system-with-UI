@@ -28,25 +28,29 @@ public class BattleStateMachine : MonoBehaviour
     public List<GameObject> heroesInBattle = new List<GameObject>();
     public List<GameObject> enemiesInBattle = new List<GameObject>();
     public List<GameObject> combatants = new List<GameObject>();
-    private List<GameObject> readyUnits = new List<GameObject>();
+    private List<UnitInitiatives> readyUnits = new List<UnitInitiatives>();
 
     // List of heroes ready for input. Used for GUI.
     public List<GameObject> heroesToManage = new List<GameObject>();
     public AttackHandler heroChoice;
 
     // Time simulation.
-    public float turnThreshold = 100f;
-    private bool wasSimulated;
+    public float turnThreshold = 1000f;
+    private readonly int turnQueueTargetSize = 8;
+    public List<UnitInitiatives> unitInitiatives = new List<UnitInitiatives>();
 
     // GUI objects
     private GameObject activeHero;
     private GameObject activePanel;
     [SerializeField] private GameObject heroPanelPrefab;
     [SerializeField] private RectTransform battleCanvas;
+    private RectTransform turnQueueRT;
     public GameObject infoBox;
     private RectTransform heroPanelRT;
     private Vector2 screenPoint;
     public List<GameObject> heroPanels = new List<GameObject>();
+    public List<Portraits> portraits = new List<Portraits>();
+    [SerializeField] private GameObject turnPanelPrefab;
     public bool isChoosingTarget = false;
 
     void Start()
@@ -59,66 +63,9 @@ public class BattleStateMachine : MonoBehaviour
         combatants.AddRange(enemiesInBattle);
 
         // Create and place GUI Hero panels.
-        foreach (GameObject hero in heroesInBattle) {
-            // For each new panel, set its parent as battleCanvas and get the RectTransform of the panel.
-            GameObject newPanel = Instantiate(heroPanelPrefab);
-            newPanel.name = hero.name + "Panel";
-            newPanel.transform.SetParent(battleCanvas);
-            heroPanelRT = newPanel.GetComponent<RectTransform>();
-
-            // Deactivate panel and add to heroPanels list.
-            newPanel.SetActive(false);
-            heroPanels.Add(newPanel);
-
-            // Calculate screen position of hero (not rectTransform).
-            screenPoint = Camera.main.WorldToScreenPoint(hero.transform.position);
-
-            // Convert screen position to Canvas space (leave camera null if Screen Space Overlay).
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out Vector2 canvasPoint);
-
-            // Position the panel.
-            heroPanelRT.localPosition = canvasPoint;
-        }
-
-        // Prepare the units' simulatedInitiative. 
-        foreach (GameObject unit in combatants)
-            {
-                UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                script.simulatedInitiative = script.initiative;
-            }
-
-        // Populate the turnQueue.
-        while (turnQueue.Count < 10) {
-            // Simulate time.
-            foreach (GameObject unit in combatants)
-            {
-                // Add speed to the unit's simulatedInitiative to simulate the turn order.
-                UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                script.simulatedInitiative += script.speed;
-
-                // If the unit's turn comes up...
-                if (script.simulatedInitiative >= turnThreshold) {
-                    // ...then add the unit to readyUnits and roll over its simulatedInitiative.
-                    readyUnits.Add(unit);
-                    script.simulatedInitiative -= turnThreshold;
-                }
-            }
-
-            // Check if any units' turns came up.
-            if (readyUnits.Count > 0) {
-                // Sort readyUnits by simulatedInitiative.
-                readyUnits.Sort(delegate(GameObject a, GameObject b) {
-                    return a.GetComponent<UnitStateMachine>().simulatedInitiative.CompareTo(b.GetComponent<UnitStateMachine>().simulatedInitiative);
-                });
-
-                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow simulatedInitiative acts first.
-                for (int i = readyUnits.Count; i > 0; i--) {
-                    turnQueue.Add(readyUnits[i-1]);
-                }
-                // Clear the list.
-                readyUnits.Clear();
-            }
-        }
+        CreateHeroPanels();
+        
+        turnQueueRT = battleCanvas.Find("TurnQueueSpacer").GetComponent<RectTransform>();
 
         infoBox.SetActive(false);
 
@@ -131,80 +78,42 @@ public class BattleStateMachine : MonoBehaviour
     {
         switch (battleState) {
             case BattleState.AdvanceTime:
-                // Check if the list was cleared by battle being won or lost.
-                if (combatants.Count > 0) {
-                    // First check if anyone's ready to act.
-                    readyUnits.Clear();
-                    foreach (GameObject unit in combatants) {
-                        UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                        if (script.initiative >= turnThreshold) {
-                            readyUnits.Add(unit);
-                            Debug.Log("Added " + unit.name + " to readyUnits.");
-                        }
+
+                // Check if the battle was cleared by winning or losing.
+                if (combatants.Count == 0) { battleState = BattleState.Idle; }
+
+                // Cache unit information.
+                PrepareInitiative();
+
+                // Simulate time and build a turnQueue.
+                GenerateQueue();
+
+                // Check if anyone's ready to act.
+                foreach (UnitInitiatives unit in unitInitiatives) {
+                    if (unit.initiative >= turnThreshold) {
+                        readyUnits.Add(unit);
                     }
-                    // Sort readyUnits
-                    readyUnits.Sort(delegate (GameObject a, GameObject b) {
-                        return a.GetComponent<UnitStateMachine>().initiative.CompareTo(b.GetComponent<UnitStateMachine>().initiative);
-                    });
-
-                    // If no one's ready to act...
-                    if (readyUnits.Count == 0) {
-
-                        wasSimulated = true;
-
-                        // Decide who acts next by simulating time. Start by preparing simulatedInitiative.
-                        foreach (GameObject unit in combatants) {
-                            UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                            script.simulatedInitiative = script.initiative;
-                        }
-
-                        // Advance simulated time until a turn comes up.
-                        while (readyUnits.Count < 1) {
-                            foreach (GameObject unit in combatants) {
-                                // Add speed to the unit's simulatedInitiative to simulate the turn order.
-                                UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                                script.simulatedInitiative += script.speed;
-
-                                // If the unit's turn comes up...
-                                if (script.simulatedInitiative >= turnThreshold) {
-                                    // ...then add the unit to readyUnits and roll over its simulatedInitiative.
-                                    readyUnits.Add(unit);
-                                    script.simulatedInitiative -= turnThreshold;
-                                }
-                            }
-                        }
-                    }
-
-                    if (wasSimulated) {
-                        // Sort readyUnits by simulatedInitiative.
-                        readyUnits.Sort(delegate (GameObject a, GameObject b) {
-                            return a.GetComponent<UnitStateMachine>().simulatedInitiative.CompareTo(b.GetComponent<UnitStateMachine>().simulatedInitiative);
-                        });
-                        readyUnits.Reverse();
-                    }
-
-                    UnitStateMachine nextUnit = readyUnits[0].GetComponent<UnitStateMachine>();
-
-                    // Advance time if we need to.
-                    if (wasSimulated) {
-                        // Calculate how many ticks it took for the next turn to occur.
-                        double initiativeDifference = turnThreshold - nextUnit.initiative;
-                        double ticks = initiativeDifference / nextUnit.speed;
-
-                        // Apply those ticks to every unit.
-                        foreach (GameObject unit in combatants) {
-                            UnitStateMachine script = unit.GetComponent<UnitStateMachine>();
-                            script.initiative += script.speed * ticks;
-                        }
-                    }
-
-                    // Tell the unit to act.
-                    nextUnit.turnState = UnitStateMachine.TurnState.Choosing;
-
-                    // Wait for it to finish.
-                    wasSimulated = false;
                 }
                 
+                // The actor is the first member of the turnQueue. Get its script.
+                UnitStateMachine actor = turnQueue[0].GetComponent<UnitStateMachine>();
+
+                // Apply ticks to each unit's initiative.
+                if (actor.initiative <= turnThreshold) {
+                    double initiativeDifference = turnThreshold - actor.initiative;
+                    double ticks = initiativeDifference / actor.speed;
+
+                    foreach (UnitInitiatives unit in unitInitiatives) {
+                        UnitStateMachine script = unit.unitGO.GetComponent<UnitStateMachine>();
+                        script.initiative += script.speed * ticks;    
+                    }
+                }
+
+                // Send the turnQueue to the GUI.
+                SendPortraitsToGUI();
+
+                // Tell the actor to act and wait until you hear back.
+                actor.turnState = UnitStateMachine.TurnState.Choosing;     
                 battleState = BattleState.Idle;
 
                 break;
@@ -222,8 +131,7 @@ public class BattleStateMachine : MonoBehaviour
                     battleState = BattleState.Win;
                 }
                 else {
-
-                    // Refresh the GUI.
+                    // Refresh the input GUI.
                     ClearActivePanel();
                     isChoosingTarget = false;
                 }
@@ -278,7 +186,11 @@ public class BattleStateMachine : MonoBehaviour
                     foreach (Button button in buttons)
                         {
                         RectTransform buttonRT = button.GetComponent<RectTransform>();
+                        Text buttonText = button.transform.Find("Text").GetComponent<Text>();
+
                         Attack attack = activeHero.GetComponent<UnitStateMachine>().attackList[index];
+                        buttonText.text = attack.attackName;
+
                         button.onClick.AddListener(() => AttackInput(activeHero, buttonRT, attack));
                         index++;
                         }
@@ -309,12 +221,14 @@ public class BattleStateMachine : MonoBehaviour
 
     public void ClearActivePanel()
     {
-        // Enable all the arrow buttons again in case the player made a selection.
-        foreach (RectTransform child in activePanel.transform) {
-            Image buttonImage = child.GetComponent<Image>();
-            buttonImage.enabled = true;
-            Text buttonText = child.GetComponentInChildren<Text>();
-            buttonText.enabled = true;
+        // Set all the buttons opaque.
+        if (activePanel != null) {
+            foreach (RectTransform child in activePanel.transform) {
+                Image buttonImage = child.gameObject.GetComponent<Image>();
+                buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 1f);
+                Text buttonText = child.gameObject.GetComponentInChildren<Text>();
+                buttonText.color = new Color(buttonText.color.r, buttonText.color.g, buttonText.color.b, 1f);
+            }
         }
 
         // Hide the panels and infobox.
@@ -322,6 +236,15 @@ public class BattleStateMachine : MonoBehaviour
             panel.SetActive(false);
         }
         infoBox.SetActive(false);
+    }
+
+    public void TargetInput(GameObject unit)
+    {
+        heroChoice.target = unit;
+        isChoosingTarget = false;
+        ClearActivePanel();
+
+        heroGUI = HeroGUI.Done;
     }
 
     private void AttackInput(GameObject unit, Transform button, Attack attack)
@@ -339,30 +262,123 @@ public class BattleStateMachine : MonoBehaviour
         Text infoBoxText = infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
         infoBoxText.text = heroChoice.description;
 
-        // Hide all buttons.
+        // Set all buttons transparent.
         foreach (RectTransform child in activePanel.transform) {
             Image buttonImage = child.gameObject.GetComponent<Image>();
-            buttonImage.enabled = false;
+            buttonImage.color = new Color(buttonImage.color.r, buttonImage.color.g, buttonImage.color.b, 0.5f);
             Text buttonText = child.gameObject.GetComponentInChildren<Text>();
-            buttonText.enabled = false;
+            buttonText.color = new Color(buttonText.color.r, buttonText.color.g, buttonText.color.b, 0.5f);
         }
 
-        // Show the button that was clicked again.
+        // Set the button that was clicked opaque again.
         Image image = button.GetComponent<Image>();
-        image.enabled = true;
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
         Text text = button.GetComponentInChildren<Text>();
-        text.enabled = true;
+        text.color = new Color(text.color.r, text.color.g, text.color.b, 1f);
 
-        // Prepare the ClickHandler for TargetInput.
+        // Turn on the ClickHandler for TargetInput.
         isChoosingTarget = true;
     }
 
-    public void TargetInput(GameObject unit)
+    private void CreateHeroPanels()
     {
-        heroChoice.target = unit;
-        isChoosingTarget = false;
-        ClearActivePanel();
+        foreach (GameObject hero in heroesInBattle) {
+            // For each new panel, set its parent as battleCanvas and get the RectTransform of the panel.
+            GameObject newPanel = Instantiate(heroPanelPrefab);
+            newPanel.name = hero.name + "Panel";
+            newPanel.transform.SetParent(battleCanvas);
+            heroPanelRT = newPanel.GetComponent<RectTransform>();
 
-        heroGUI = HeroGUI.Done;
+            // Deactivate panel and add to heroPanels list.
+            newPanel.SetActive(false);
+            heroPanels.Add(newPanel);
+
+            // Calculate screen position of hero (not rectTransform).
+            screenPoint = Camera.main.WorldToScreenPoint(hero.transform.position);
+
+            // Convert screen position to Canvas space (leave camera null if Screen Space Overlay).
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out Vector2 canvasPoint);
+
+            // Position the panel.
+            heroPanelRT.localPosition = canvasPoint;
+        }
+    }
+
+    private void PrepareInitiative()
+    {
+        unitInitiatives.Clear();
+
+        // Read a combatant's fields into a new member of unitInitiatives. 
+        foreach (GameObject combatant in combatants) {
+            UnitInitiatives currentUnit = new UnitInitiatives();
+            UnitStateMachine script = combatant.GetComponent<UnitStateMachine>();
+
+            currentUnit.unitGO = combatant;
+            currentUnit.initiative = script.initiative;
+            currentUnit.speed = script.speed;
+            unitInitiatives.Add(currentUnit);
+        }
+    }
+
+    private void GenerateQueue()
+    {
+        turnQueue.Clear();
+        while (turnQueue.Count < turnQueueTargetSize)
+            {
+            readyUnits.Clear();
+
+            // Tick the units forward.
+            foreach (UnitInitiatives unit in unitInitiatives) {
+                unit.initiative += unit.speed;
+
+                // If the unit's turn comes up, add it to the list.
+                if (unit.initiative >= turnThreshold) {
+                    readyUnits.Add(unit);
+                    unit.initiative -= turnThreshold;
+                }
+            }
+
+            // Check if any units' turns came up.
+            if (readyUnits.Count > 0) {
+                // Sort by initiative.
+                readyUnits.Sort(delegate (UnitInitiatives a, UnitInitiatives b) {
+                    return a.initiative.CompareTo(b.initiative);
+                });
+
+                // Add the units to the turnQueue by reading readyUnits back to front. Highest overflow initiative acts first.
+                for (int i = readyUnits.Count; i > 0; i--) {
+                    turnQueue.Add(readyUnits[i - 1].unitGO);
+                }
+            }
+        }
+    }
+
+    private void SendPortraitsToGUI()
+    {
+        foreach (RectTransform child in turnQueueRT) {
+            Destroy(child.gameObject);
+        }
+
+        portraits.Clear();
+        foreach (GameObject unit in turnQueue) {
+            Portraits newPanel = new Portraits {
+                unitGO = unit,
+                sprite = unit.GetComponent<UnitStateMachine>().portrait
+            };
+            portraits.Add(newPanel);
+        }
+
+        // Add them to the TurnQueue GUI. This has to happen after turnQueue is filled.
+        foreach (Portraits portrait in portraits) {
+            GameObject newPanel = Instantiate(turnPanelPrefab);
+            newPanel.transform.SetParent(turnQueueRT);
+
+            Image newPanelPortrait = newPanel.transform.Find("Portrait").GetComponent<Image>();
+            newPanelPortrait.sprite = portrait.sprite;
+
+            Image progressBar = newPanel.transform.Find("ProgressBar").GetComponent<Image>();
+            float calcProgress = (float)portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+            progressBar.transform.localScale = new Vector3(Mathf.Clamp(calcProgress, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
+        }
     }
 }

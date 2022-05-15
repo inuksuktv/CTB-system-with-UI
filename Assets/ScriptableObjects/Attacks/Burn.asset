@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Burn
   m_EditorClassIdentifier: 
   attackName: Burn
-  attackDescription: A bright flame.
+  description: Leave a mark.
   fireTokens: 1
   waterTokens: 0
   earthTokens: 0

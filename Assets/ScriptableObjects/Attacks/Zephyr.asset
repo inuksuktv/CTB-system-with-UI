@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Zephyr
   m_EditorClassIdentifier: 
   attackName: Zephyr
-  attackDescription: Lighten your step.
+  description: A quixotic breeze.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 0

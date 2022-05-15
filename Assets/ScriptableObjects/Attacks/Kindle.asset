@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Kindle
   m_EditorClassIdentifier: 
   attackName: Kindle
-  attackDescription: Stoke the hearth.
+  description: Set a light inside.
   fireTokens: 1
   waterTokens: 0
   earthTokens: 0

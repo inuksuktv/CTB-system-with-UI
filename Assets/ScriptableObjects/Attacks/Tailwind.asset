@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tailwind
   m_EditorClassIdentifier: 
   attackName: Tailwind
-  attackDescription: May the wind be always at your back.
+  description: A helping hand.
   fireTokens: 0
   waterTokens: 0
   earthTokens: 0

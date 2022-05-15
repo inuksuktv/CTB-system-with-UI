@@ -23,26 +23,11 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
     private float animationSpeed = 20f;
     protected Vector2 startPosition;
 
-    private string oldInfoText;
+    [SerializeField] private GameObject damagePopup;
+    [SerializeField] private RectTransform battleCanvas;
 
     protected bool alive = true;
 
-    void OnMouseEnter()
-    {
-        if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
-            /*Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
-            oldInfoText = infoText.text;
-            infoText.text = gameObject.name;*/
-        }
-    }
-
-    void OnMouseExit()
-    {
-        if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
-            /*Text infoText = BSM.infoBox.transform.Find("Text").gameObject.GetComponent<Text>();
-            infoText.text = oldInfoText;*/
-        }
-    }
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
         if (BSM.isChoosingTarget && gameObject.CompareTag("Unit")) {
@@ -155,6 +140,16 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
             currentHP = 0;
             turnState = TurnState.Dead;
         }
+
+        // Create a damagePopup and place it over the target.
+        GameObject textPopup = Instantiate(damagePopup);
+        textPopup.transform.SetParent(battleCanvas);
+
+        Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("BattleCanvas").GetComponent<RectTransform>(), screenPoint, null, out Vector2 canvasPoint);
+        textPopup.GetComponent<RectTransform>().localPosition = canvasPoint;
+
+        textPopup.GetComponent<Text>().text = damageAmount.ToString();
     }
 
     private bool MoveToTarget(Vector2 target)
