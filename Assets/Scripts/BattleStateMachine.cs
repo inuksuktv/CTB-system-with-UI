@@ -41,16 +41,22 @@ public class BattleStateMachine : MonoBehaviour
 
     // GUI objects
     private GameObject activeHero;
-    private GameObject activePanel;
     [SerializeField] private GameObject heroPanelPrefab;
-    [SerializeField] private RectTransform battleCanvas;
-    private RectTransform turnQueueRT;
-    public GameObject infoBox;
+    private GameObject activePanel;
     private RectTransform heroPanelRT;
+    [SerializeField] private RectTransform battleCanvas;
+    [SerializeField] private GameObject turnQueuePrefab;
+    private RectTransform turnQueueRT;
+    [SerializeField] private GameObject turnPanelPrefab;
+    [SerializeField] private GameObject infoBoxPrefab;
+    private GameObject infoBox;
+
     private Vector2 screenPoint;
+
     public List<GameObject> heroPanels = new List<GameObject>();
     public List<Portraits> portraits = new List<Portraits>();
-    [SerializeField] private GameObject turnPanelPrefab;
+    
+    
     public bool isChoosingTarget = false;
 
     void Start()
@@ -62,11 +68,10 @@ public class BattleStateMachine : MonoBehaviour
         combatants.AddRange(heroesInBattle);
         combatants.AddRange(enemiesInBattle);
 
-        // Create and place GUI Hero panels.
+        // Create and place GUI elements.
         CreateHeroPanels();
-        
-        turnQueueRT = battleCanvas.Find("TurnQueueSpacer").GetComponent<RectTransform>();
-
+        turnQueueRT = Instantiate(turnQueuePrefab, battleCanvas).GetComponent<RectTransform>();
+        infoBox = Instantiate(infoBoxPrefab, battleCanvas);
         infoBox.SetActive(false);
 
         // Start the battle.
@@ -283,24 +288,18 @@ public class BattleStateMachine : MonoBehaviour
     private void CreateHeroPanels()
     {
         foreach (GameObject hero in heroesInBattle) {
-            // For each new panel, set its parent as battleCanvas and get the RectTransform of the panel.
-            GameObject newPanel = Instantiate(heroPanelPrefab);
+            // Create and name the heroPanel.
+            GameObject newPanel = Instantiate(heroPanelPrefab, battleCanvas);
             newPanel.name = hero.name + "Panel";
-            newPanel.transform.SetParent(battleCanvas);
-            heroPanelRT = newPanel.GetComponent<RectTransform>();
 
             // Deactivate panel and add to heroPanels list.
             newPanel.SetActive(false);
             heroPanels.Add(newPanel);
 
-            // Calculate screen position of hero (not rectTransform).
-            screenPoint = Camera.main.WorldToScreenPoint(hero.transform.position);
-
-            // Convert screen position to Canvas space (leave camera null if Screen Space Overlay).
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out Vector2 canvasPoint);
-
             // Position the panel.
-            heroPanelRT.localPosition = canvasPoint;
+            screenPoint = Camera.main.WorldToScreenPoint(hero.transform.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas, screenPoint, null, out Vector2 canvasPoint);
+            newPanel.GetComponent<RectTransform>().localPosition = canvasPoint;
         }
     }
 
@@ -358,26 +357,37 @@ public class BattleStateMachine : MonoBehaviour
         foreach (RectTransform child in turnQueueRT) {
             Destroy(child.gameObject);
         }
-
         portraits.Clear();
-        foreach (GameObject unit in turnQueue) {
+
+        foreach (GameObject unit in turnQueue)
+        {
+            // Fill out the fields for the new panel.
             Portraits newPanel = new Portraits {
                 unitGO = unit,
-                sprite = unit.GetComponent<UnitStateMachine>().portrait
+                sprite = unit.GetComponent<UnitStateMachine>().portrait,
+                duplicate = false
             };
+            // Check if the panel is a duplicate so we can set the progressBar to zero later.
+            foreach (Portraits portrait in portraits) {
+                if (portrait.unitGO == unit) {
+                    newPanel.duplicate = true;
+                }
+            }
             portraits.Add(newPanel);
         }
 
-        // Add them to the TurnQueue GUI. This has to happen after turnQueue is filled.
+        // Add them to the TurnQueue GUI. This has to happen after GenerateQueue().
         foreach (Portraits portrait in portraits) {
-            GameObject newPanel = Instantiate(turnPanelPrefab);
-            newPanel.transform.SetParent(turnQueueRT);
+            GameObject newPanel = Instantiate(turnPanelPrefab, turnQueueRT);
 
             Image newPanelPortrait = newPanel.transform.Find("Portrait").GetComponent<Image>();
             newPanelPortrait.sprite = portrait.sprite;
 
             Image progressBar = newPanel.transform.Find("ProgressBar").GetComponent<Image>();
-            float calcProgress = (float)portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+            float calcProgress = 0f;
+            if (!portrait.duplicate) {
+                calcProgress = (float)portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+            }
             progressBar.transform.localScale = new Vector3(Mathf.Clamp(calcProgress, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
         }
     }

@@ -6,4 +6,5 @@ public class Portraits
 {
     public GameObject unitGO;
     public Sprite sprite;
+    public bool duplicate;
 }
