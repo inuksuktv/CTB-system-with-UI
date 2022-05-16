@@ -25,6 +25,7 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
     [SerializeField] private GameObject damagePopup;
     [SerializeField] private RectTransform battleCanvas;
+    [SerializeField] private GameObject dualStatePE;
 
     protected bool alive = true;
 
@@ -130,7 +131,14 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
     {
         float calcDamage = currentATK + attackHandler.chosenAttack.attackDamage;
         attackHandler.target.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
-        Debug.Log(unitName + " deals " + calcDamage + " damage to " + attackHandler.target.GetComponent<UnitStateMachine>().unitName + " with " + attackHandler.chosenAttack.attackName);
+
+        stateCharge = Mathf.Clamp(attackHandler.chosenAttack.stateCharge + stateCharge, 0, 100);
+        Debug.Log(unitName + "'s stateCharge is " + stateCharge);
+
+        if (stateCharge == 100) {
+            dualState = true;
+            GameObject dualStateEffect = Instantiate(dualStatePE, transform);
+        }
     }
 
     private void TakeDamage(float damageAmount)

@@ -19,3 +19,4 @@ MonoBehaviour:
   earthTokens: 1
   airTokens: 0
   attackDamage: 15
+  stateCharge: 20

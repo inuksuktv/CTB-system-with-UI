@@ -7,5 +7,5 @@ public class Attack : ScriptableObject
 {
     public string attackName, description;
     public int fireTokens, waterTokens, earthTokens, airTokens;
-    public float attackDamage;
+    public float attackDamage, stateCharge;
 }

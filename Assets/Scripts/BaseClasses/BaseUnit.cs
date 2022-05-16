@@ -12,7 +12,7 @@ public class BaseUnit : MonoBehaviour
     public int fireTokens, waterTokens, earthTokens, skyTokens;
     public bool dualState;
 
-    public double initiative, simulatedInitiative;
+    public double initiative;
 
     public List<Attack> attackList = new List<Attack>();
     public Sprite portrait;
