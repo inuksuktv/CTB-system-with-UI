@@ -26,6 +26,9 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
     [SerializeField] private GameObject damagePopup;
     [SerializeField] private RectTransform battleCanvas;
     [SerializeField] private GameObject dualStatePE;
+    protected GameObject dualStateEffect;
+    [SerializeField] protected int turnCounter;
+    protected readonly int dualStateTurns = 2;
 
     protected bool alive = true;
 
@@ -75,6 +78,12 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         myAttack = new AttackHandler();
         myAttack.target = BSM.heroesInBattle[Random.Range(0, BSM.heroesInBattle.Count)];
         myAttack.chosenAttack = attackList[Random.Range(0, attackList.Count)];
+
+        turnCounter--;
+        if (turnCounter == 0 && dualStateEffect != null) { 
+            Destroy(dualStateEffect);
+            stateCharge = 0;
+        }
         turnState = TurnState.Acting;
     }
 
@@ -129,16 +138,19 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
     private void DoDamage (AttackHandler attackHandler)
     {
+        stateCharge = Mathf.Clamp(stateCharge + attackHandler.chosenAttack.stateCharge, 0, 100);
+
+        if (stateCharge == 100 && turnCounter <= 0) {
+            dualState = true;
+            dualStateEffect = Instantiate(dualStatePE, transform);
+            turnCounter = dualStateTurns;
+        }
+
         float calcDamage = currentATK + attackHandler.chosenAttack.attackDamage;
+        if (dualState) { calcDamage *= 2; }
         attackHandler.target.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
 
-        stateCharge = Mathf.Clamp(attackHandler.chosenAttack.stateCharge + stateCharge, 0, 100);
-        Debug.Log(unitName + "'s stateCharge is " + stateCharge);
 
-        if (stateCharge == 100) {
-            dualState = true;
-            GameObject dualStateEffect = Instantiate(dualStatePE, transform);
-        }
     }
 
     private void TakeDamage(float damageAmount)
@@ -150,11 +162,10 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         }
 
         // Create a damagePopup and place it over the target.
-        GameObject textPopup = Instantiate(damagePopup);
-        textPopup.transform.SetParent(battleCanvas);
+        GameObject textPopup = Instantiate(damagePopup, battleCanvas);
 
         Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.position);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("BattleCanvas").GetComponent<RectTransform>(), screenPoint, null, out Vector2 canvasPoint);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas.GetComponent<RectTransform>(), screenPoint, null, out Vector2 canvasPoint);
         textPopup.GetComponent<RectTransform>().localPosition = canvasPoint;
 
         textPopup.GetComponent<Text>().text = damageAmount.ToString();

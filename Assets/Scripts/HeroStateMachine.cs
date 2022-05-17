@@ -8,6 +8,12 @@ public class HeroStateMachine : UnitStateMachine
     {
         BSM.heroesToManage.Clear();
         BSM.heroesToManage.Add(gameObject);
+
+        turnCounter--;
+        if (turnCounter == 0 && dualStateEffect != null) {
+            Destroy(dualStateEffect);
+            stateCharge = 0;
+        }
         turnState = TurnState.Idle;
     }
 

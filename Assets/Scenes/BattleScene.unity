@@ -329,8 +329,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Tree
-  currentHP: 80
-  maxHP: 80
+  currentHP: 160
+  maxHP: 160
   baseATK: 15
   currentATK: 15
   baseDEF: 7
@@ -351,6 +351,7 @@ MonoBehaviour:
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 1176887649}
   dualStatePE: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
+  turnCounter: 0
 --- !u!61 &510031849
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6776,8 +6777,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Grass
-  currentHP: 40
-  maxHP: 40
+  currentHP: 120
+  maxHP: 120
   baseATK: 10
   currentATK: 10
   baseDEF: 5
@@ -6798,6 +6799,7 @@ MonoBehaviour:
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 1176887649}
   dualStatePE: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
+  turnCounter: 0
 --- !u!224 &1156119364
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7013,8 +7015,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Lotus
-  currentHP: 40
-  maxHP: 40
+  currentHP: 120
+  maxHP: 120
   baseATK: 10
   currentATK: 10
   baseDEF: 5
@@ -7035,6 +7037,7 @@ MonoBehaviour:
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 1176887649}
   dualStatePE: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
+  turnCounter: 0
 --- !u!61 &1178996232
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7071,6 +7074,14 @@ PrefabInstance:
     - target: {fileID: 2264084737530558973, guid: 79960d7db006e46499d15f076d36236c, type: 3}
       propertyPath: m_Name
       value: Water
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
+      propertyPath: maxHP
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
+      propertyPath: currentHP
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
       propertyPath: dualStatePE
@@ -7136,6 +7147,14 @@ PrefabInstance:
     - target: {fileID: 4316573707598327907, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
       propertyPath: m_Name
       value: Earth
+      objectReference: {fileID: 0}
+    - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
+      propertyPath: maxHP
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
+      propertyPath: currentHP
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
       propertyPath: dualStatePE
@@ -7247,6 +7266,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
+      propertyPath: maxHP
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
+      propertyPath: currentHP
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
       propertyPath: dualStatePE
       value: 
       objectReference: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
@@ -7268,8 +7295,16 @@ PrefabInstance:
       value: Sky
       objectReference: {fileID: 0}
     - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
+      propertyPath: maxHP
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
+      propertyPath: speed
+      value: 44
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
       propertyPath: currentHP
-      value: 60
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
       propertyPath: dualStatePE
