@@ -36,14 +36,13 @@ public class BattleStateMachine : MonoBehaviour
 
     // Time simulation.
     public float turnThreshold = 1000f;
-    private readonly int turnQueueTargetSize = 8;
+    private readonly int turnQueueTargetSize = 9;
     public List<UnitInitiatives> unitInitiatives = new List<UnitInitiatives>();
 
-    // GUI objects
+    // GUI objects.
     private GameObject activeHero;
     [SerializeField] private GameObject heroPanelPrefab;
     private GameObject activePanel;
-    private RectTransform heroPanelRT;
     [SerializeField] private RectTransform battleCanvas;
     [SerializeField] private GameObject turnQueuePrefab;
     private RectTransform turnQueueRT;
@@ -51,11 +50,11 @@ public class BattleStateMachine : MonoBehaviour
     [SerializeField] private GameObject infoBoxPrefab;
     private GameObject infoBox;
 
+    // Other GUI data.
     private Vector2 screenPoint;
 
     public List<GameObject> heroPanels = new List<GameObject>();
     public List<Portraits> portraits = new List<Portraits>();
-    
     
     public bool isChoosingTarget = false;
 
@@ -216,8 +215,6 @@ public class BattleStateMachine : MonoBehaviour
 
                 heroesToManage.Remove(activeHero);
 
-                ClearActivePanel();
-
                 heroGUI = HeroGUI.Available;
 
                 break;
@@ -307,7 +304,7 @@ public class BattleStateMachine : MonoBehaviour
     {
         unitInitiatives.Clear();
 
-        // Read a combatant's fields into a new member of unitInitiatives. 
+        // Read a combatant's data into a new member of unitInitiatives. 
         foreach (GameObject combatant in combatants) {
             UnitInitiatives currentUnit = new UnitInitiatives();
             UnitStateMachine script = combatant.GetComponent<UnitStateMachine>();
@@ -350,6 +347,11 @@ public class BattleStateMachine : MonoBehaviour
                 }
             }
         }
+
+        // If the queue is too long, trim the last entry.
+        while (turnQueue.Count > turnQueueTargetSize) {
+            turnQueue.RemoveAt(turnQueue.Count - 1);
+        }
     }
 
     private void SendPortraitsToGUI()
@@ -376,19 +378,31 @@ public class BattleStateMachine : MonoBehaviour
             portraits.Add(newPanel);
         }
 
+        int index = 0;
         // Add them to the TurnQueue GUI. This has to happen after GenerateQueue().
         foreach (Portraits portrait in portraits) {
-            GameObject newPanel = Instantiate(turnPanelPrefab, turnQueueRT);
+            Transform newPanel = Instantiate(turnPanelPrefab, turnQueueRT).transform;
 
-            Image newPanelPortrait = newPanel.transform.Find("Portrait").GetComponent<Image>();
-            newPanelPortrait.sprite = portrait.sprite;
+            Transform icon = newPanel.Find("Portrait");
+            Image newPortrait = icon.GetComponent<Image>();
+            RectTransform newPortraitRT = icon.GetComponent<RectTransform>();
 
-            Image progressBar = newPanel.transform.Find("ProgressBar").GetComponent<Image>();
-            float calcProgress = 0f;
-            if (!portrait.duplicate) {
-                calcProgress = (float)portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+            newPortrait.sprite = portrait.sprite;
+
+            if (index > 0) {
+                newPortraitRT.anchoredPosition += 20 * Vector2.right;
             }
-            progressBar.transform.localScale = new Vector3(Mathf.Clamp(calcProgress, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
+
+            double calcProgress = portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+            if (portrait.duplicate) {
+                calcProgress = 0;
+                newPortraitRT.anchoredPosition += 20 * Vector2.right;
+            }
+
+            Image progressBar = newPanel.Find("ProgressBar").GetComponent<Image>();
+            progressBar.transform.localScale = new Vector3(Mathf.Clamp((float)calcProgress, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
+
+            index++;
         }
     }
 }

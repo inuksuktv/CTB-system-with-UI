@@ -147,15 +147,18 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         }
 
         float calcDamage = currentATK + attackHandler.chosenAttack.attackDamage;
-        if (dualState) { calcDamage *= 2; }
+        if (dualState) {
+            calcDamage *= 2;
+        }
         attackHandler.target.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
 
 
     }
 
-    private void TakeDamage(float damageAmount)
+    private void TakeDamage(float attackDamage)
     {
-        currentHP -= damageAmount;
+        float calcDamage = attackDamage - currentDEF;
+        currentHP -= calcDamage;
         if (currentHP <= 0) {
             currentHP = 0;
             turnState = TurnState.Dead;
@@ -168,7 +171,7 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         RectTransformUtility.ScreenPointToLocalPointInRectangle(battleCanvas.GetComponent<RectTransform>(), screenPoint, null, out Vector2 canvasPoint);
         textPopup.GetComponent<RectTransform>().localPosition = canvasPoint;
 
-        textPopup.GetComponent<Text>().text = damageAmount.ToString();
+        textPopup.GetComponent<Text>().text = calcDamage.ToString();
     }
 
     private bool MoveToTarget(Vector2 target)
