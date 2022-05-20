@@ -150,9 +150,13 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         if (dualState) {
             calcDamage *= 2;
         }
-        attackHandler.target.GetComponent<UnitStateMachine>().TakeDamage(calcDamage);
 
-
+        UnitStateMachine attackTarget = attackHandler.target.GetComponent<UnitStateMachine>();
+        attackTarget.fireTokens += attackHandler.chosenAttack.fireTokens;
+        attackTarget.waterTokens += attackHandler.chosenAttack.waterTokens;
+        attackTarget.earthTokens += attackHandler.chosenAttack.earthTokens;
+        attackTarget.skyTokens += attackHandler.chosenAttack.skyTokens;
+        attackTarget.TakeDamage(calcDamage);
     }
 
     private void TakeDamage(float attackDamage)

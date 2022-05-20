@@ -191,9 +191,11 @@ public class BattleStateMachine : MonoBehaviour
                         {
                         RectTransform buttonRT = button.GetComponent<RectTransform>();
                         Text buttonText = button.transform.Find("Text").GetComponent<Text>();
+                        Image buttonImage = button.GetComponent<Image>();
 
                         Attack attack = activeHero.GetComponent<UnitStateMachine>().attackList[index];
                         buttonText.text = attack.attackName;
+                        buttonImage.sprite = attack.buttonSprite;
 
                         button.onClick.AddListener(() => AttackInput(activeHero, buttonRT, attack));
                         index++;

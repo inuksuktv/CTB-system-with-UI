@@ -110,14 +110,15 @@ MonoBehaviour:
   skyTokens: 0
   dualState: 0
   initiative: 0
-  simulatedInitiative: 0
   attackList:
   - {fileID: 11400000, guid: 9600fd7de714d554ab872b9a2f61f602, type: 2}
   - {fileID: 11400000, guid: 58d8af15bcee84749b195773de0ccb72, type: 2}
   - {fileID: 11400000, guid: b0833807179de724fa6e42576c0a6e37, type: 2}
-  - {fileID: 11400000, guid: 520cb0d2964d67a4faf682e79d17341c, type: 2}
+  - {fileID: 11400000, guid: ad3541cfa9e336d4fa199ab97b283198, type: 2}
   portrait: {fileID: 21300000, guid: 530bcabb1501d8148a19a77465ecac03, type: 3}
   turnState: 0
   attackTarget: {fileID: 0}
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 0}
+  dualStatePE: {fileID: 0}
+  turnCounter: 0
