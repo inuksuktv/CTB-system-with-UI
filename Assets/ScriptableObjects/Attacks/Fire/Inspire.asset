@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: Inspire
   description: To ascend the brightest heaven of invention.
-  fireTokens: 2
+  fireTokens: 1
   waterTokens: 0
   earthTokens: 0
-  airTokens: 0
+  skyTokens: 0
   attackDamage: -5
   stateCharge: 20
   buttonSprite: {fileID: 21300000, guid: 64f64d54d4c82504badd2a5c0d6ec23d, type: 3}

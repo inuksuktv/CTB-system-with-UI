@@ -17,7 +17,7 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
     }
     public TurnState turnState;
 
-    private AttackHandler myAttack;
+    [SerializeField] private AttackHandler myAttack;
     public GameObject attackTarget;
     protected bool actionStarted;
     private float animationSpeed = 20f;
@@ -103,8 +103,6 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
             alive = false;
 
-            BSM.ClearActivePanel();
-
             BSM.battleState = BattleStateMachine.BattleState.VictoryCheck;
         }
     }
@@ -116,6 +114,15 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         }
 
         actionStarted = true;
+
+        // If your neighbour is in dualState, repeat their last action.
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 2f);
+        foreach (Collider2D unit in hitColliders) {
+            UnitStateMachine script = unit.transform.GetComponent<UnitStateMachine>();
+            if (unit.gameObject != gameObject && script.dualState == true) {
+                script.StartCoroutine("ExtraAttack");
+            }
+        }
 
         Vector2 targetPosition = new Vector2(myAttack.target.transform.position.x, myAttack.target.transform.position.y);
         while (MoveToTarget(targetPosition)) { yield return null; }
@@ -136,6 +143,21 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         BSM.battleState = BattleStateMachine.BattleState.AdvanceTime;
     }
 
+    public IEnumerator ExtraAttack()
+    {
+        myAttack.target = BSM.enemiesInBattle[Random.Range(0, BSM.enemiesInBattle.Count)];
+
+        Vector2 targetPosition = new Vector2(myAttack.target.transform.position.x, myAttack.target.transform.position.y);
+        while (MoveToTarget(targetPosition)) { yield return null; }
+
+        yield return new WaitForSeconds(0.5f);
+        
+        DoDamage(myAttack);
+
+        Vector2 firstPosition = startPosition;
+        while (MoveBack(firstPosition)) { yield return null; }
+    }
+
     private void DoDamage (AttackHandler attackHandler)
     {
         stateCharge = Mathf.Clamp(stateCharge + attackHandler.chosenAttack.stateCharge, 0, 100);
@@ -151,12 +173,12 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
             calcDamage *= 2;
         }
 
-        UnitStateMachine attackTarget = attackHandler.target.GetComponent<UnitStateMachine>();
-        attackTarget.fireTokens += attackHandler.chosenAttack.fireTokens;
-        attackTarget.waterTokens += attackHandler.chosenAttack.waterTokens;
-        attackTarget.earthTokens += attackHandler.chosenAttack.earthTokens;
-        attackTarget.skyTokens += attackHandler.chosenAttack.skyTokens;
-        attackTarget.TakeDamage(calcDamage);
+        UnitStateMachine target = attackHandler.target.GetComponent<UnitStateMachine>();
+        target.fireTokens += attackHandler.chosenAttack.fireTokens;
+        target.waterTokens += attackHandler.chosenAttack.waterTokens;
+        target.earthTokens += attackHandler.chosenAttack.earthTokens;
+        target.skyTokens += attackHandler.chosenAttack.skyTokens;
+        target.TakeDamage(calcDamage);
     }
 
     private void TakeDamage(float attackDamage)

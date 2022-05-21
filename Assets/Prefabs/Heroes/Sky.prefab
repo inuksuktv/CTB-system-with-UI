@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8010472940516588043}
   - component: {fileID: 8010472940516588040}
   - component: {fileID: 8010472940516588041}
+  - component: {fileID: 3964827271294919538}
   m_Layer: 0
   m_Name: Sky
   m_TagString: Hero
@@ -96,8 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Sky
-  currentHP: 25
-  maxHP: 60
+  currentHP: 100
+  maxHP: 100
   baseATK: 10
   currentATK: 10
   baseDEF: 5
@@ -115,10 +116,43 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 58d8af15bcee84749b195773de0ccb72, type: 2}
   - {fileID: 11400000, guid: b0833807179de724fa6e42576c0a6e37, type: 2}
   - {fileID: 11400000, guid: ad3541cfa9e336d4fa199ab97b283198, type: 2}
-  portrait: {fileID: 21300000, guid: 530bcabb1501d8148a19a77465ecac03, type: 3}
+  portrait: {fileID: 21300000, guid: c0b9d29928db22c40aafb4d2c2e14a73, type: 3}
   turnState: 0
+  myAttack:
+    attackerName: 
+    attackTargetName: 
+    description: 
+    attacker: {fileID: 0}
+    target: {fileID: 0}
+    chosenAttack: {fileID: 0}
   attackTarget: {fileID: 0}
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 0}
-  dualStatePE: {fileID: 0}
+  dualStatePE: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
   turnCounter: 0
+--- !u!61 &3964827271294919538
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8010472940516588038}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 2.56, y: 2.56}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

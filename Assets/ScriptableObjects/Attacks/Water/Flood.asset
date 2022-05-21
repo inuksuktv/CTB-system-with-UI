@@ -15,9 +15,9 @@ MonoBehaviour:
   attackName: Flood
   description: Drown the landscape.
   fireTokens: 0
-  waterTokens: 2
+  waterTokens: 1
   earthTokens: 0
-  airTokens: 0
+  skyTokens: 0
   attackDamage: 10
   stateCharge: 35
   buttonSprite: {fileID: 21300000, guid: cfd3bfb212480e04e9ce563c8d0c50e2, type: 3}

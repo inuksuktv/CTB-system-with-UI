@@ -91,13 +91,6 @@ public class BattleStateMachine : MonoBehaviour
 
                 // Simulate time and build a turnQueue.
                 GenerateQueue();
-
-                // Check if anyone's ready to act.
-                foreach (UnitInitiatives unit in unitInitiatives) {
-                    if (unit.initiative >= turnThreshold) {
-                        readyUnits.Add(unit);
-                    }
-                }
                 
                 // The actor is the first member of the turnQueue. Get its script.
                 UnitStateMachine actor = turnQueue[0].GetComponent<UnitStateMachine>();
@@ -138,6 +131,7 @@ public class BattleStateMachine : MonoBehaviour
                     // Refresh the input GUI.
                     ClearActivePanel();
                     isChoosingTarget = false;
+                    battleState = BattleState.Idle;
                 }
 
                 break;
@@ -244,7 +238,9 @@ public class BattleStateMachine : MonoBehaviour
 
     public void TargetInput(GameObject unit)
     {
+        // Read the target into heroChoice.
         heroChoice.target = unit;
+        heroChoice.attackTargetName = unit.name;
         isChoosingTarget = false;
         ClearActivePanel();
 
@@ -358,6 +354,7 @@ public class BattleStateMachine : MonoBehaviour
 
     private void SendPortraitsToGUI()
     {
+        // Clean up before we send portraits.
         foreach (RectTransform child in turnQueueRT) {
             Destroy(child.gameObject);
         }
@@ -371,7 +368,7 @@ public class BattleStateMachine : MonoBehaviour
                 sprite = unit.GetComponent<UnitStateMachine>().portrait,
                 duplicate = false
             };
-            // Check if the panel is a duplicate so we can set the progressBar to zero later.
+            // Check if the panel represents a duplicate turn.
             foreach (Portraits portrait in portraits) {
                 if (portrait.unitGO == unit) {
                     newPanel.duplicate = true;
@@ -391,16 +388,20 @@ public class BattleStateMachine : MonoBehaviour
 
             newPortrait.sprite = portrait.sprite;
 
+            // The active portrait is aligned left, other portraits are moved to the right.
             if (index > 0) {
                 newPortraitRT.anchoredPosition += 20 * Vector2.right;
             }
 
             double calcProgress = portrait.unitGO.GetComponent<UnitStateMachine>().initiative / turnThreshold;
+
+            // If a portrait is a duplicate, move it farther right and set the progressBar to zero.
             if (portrait.duplicate) {
                 calcProgress = 0;
                 newPortraitRT.anchoredPosition += 20 * Vector2.right;
             }
 
+            // Set the progressBar.
             Image progressBar = newPanel.Find("ProgressBar").GetComponent<Image>();
             progressBar.transform.localScale = new Vector3(Mathf.Clamp((float)calcProgress, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
 

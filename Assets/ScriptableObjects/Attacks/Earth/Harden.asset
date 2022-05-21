@@ -16,8 +16,8 @@ MonoBehaviour:
   description: Flesh to stone.
   fireTokens: 0
   waterTokens: 0
-  earthTokens: 2
-  airTokens: 0
+  earthTokens: 1
+  skyTokens: 0
   attackDamage: -10
   stateCharge: 20
   buttonSprite: {fileID: 21300000, guid: d9896b4ad38b0ee4aab013d35571d0aa, type: 3}

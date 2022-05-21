@@ -17,7 +17,7 @@ MonoBehaviour:
   fireTokens: 0
   waterTokens: 0
   earthTokens: 0
-  airTokens: 1
+  skyTokens: 2
   attackDamage: 10
   stateCharge: 40
   buttonSprite: {fileID: 21300000, guid: cef08e9a29bf88a4784295878f3191cc, type: 3}

@@ -347,6 +347,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b59a5c3b67612c848a8d9a3e47fea859, type: 2}
   portrait: {fileID: 21300000, guid: 38291e0b3c0027e4b81a8b3d27a3c0a4, type: 3}
   turnState: 0
+  myAttack:
+    attackerName: 
+    attackTargetName: 
+    description: 
+    attacker: {fileID: 0}
+    target: {fileID: 0}
+    chosenAttack: {fileID: 0}
   attackTarget: {fileID: 0}
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 1176887649}
@@ -6795,6 +6802,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 035fd2c6be75af742819d2d244dce2ce, type: 2}
   portrait: {fileID: 21300000, guid: 4819a761bfa88b54bb0a3018ec860d2f, type: 3}
   turnState: 0
+  myAttack:
+    attackerName: 
+    attackTargetName: 
+    description: 
+    attacker: {fileID: 0}
+    target: {fileID: 0}
+    chosenAttack: {fileID: 0}
   attackTarget: {fileID: 0}
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 1176887649}
@@ -7033,6 +7047,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9600fd7de714d554ab872b9a2f61f602, type: 2}
   portrait: {fileID: 21300000, guid: c5eb85c4f02f36e41925c628d3cfa572, type: 3}
   turnState: 0
+  myAttack:
+    attackerName: 
+    attackTargetName: 
+    description: 
+    attacker: {fileID: 0}
+    target: {fileID: 0}
+    chosenAttack: {fileID: 0}
   attackTarget: {fileID: 0}
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 1176887649}
@@ -7075,22 +7096,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Water
       objectReference: {fileID: 0}
-    - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
-      propertyPath: maxHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
-      propertyPath: portrait
-      value: 
-      objectReference: {fileID: 21300000, guid: ca542c7e561fad942a477a5692cfb2fc, type: 3}
-    - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
-      propertyPath: currentHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
-      propertyPath: dualStatePE
-      value: 
-      objectReference: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
     - target: {fileID: 2264084737530558974, guid: 79960d7db006e46499d15f076d36236c, type: 3}
       propertyPath: battleCanvas
       value: 
@@ -7152,22 +7157,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Earth
       objectReference: {fileID: 0}
-    - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
-      propertyPath: maxHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
-      propertyPath: portrait
-      value: 
-      objectReference: {fileID: 21300000, guid: 92a9e30bf3aaf18459334aa276f72e3e, type: 3}
-    - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
-      propertyPath: currentHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
-      propertyPath: dualStatePE
-      value: 
-      objectReference: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
     - target: {fileID: 4316573707598327964, guid: e97298fd7c1764e41bbc65ff2a195b16, type: 3}
       propertyPath: battleCanvas
       value: 
@@ -7274,22 +7263,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
-      propertyPath: maxHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
-      propertyPath: portrait
-      value: 
-      objectReference: {fileID: 21300000, guid: a870350ec1c471a4fa57d34ef30a120e, type: 3}
-    - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
-      propertyPath: currentHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
-      propertyPath: dualStatePE
-      value: 
-      objectReference: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
-    - target: {fileID: 7896992357756340524, guid: 41691f6208d834241bd8c53055f95e36, type: 3}
       propertyPath: battleCanvas
       value: 
       objectReference: {fileID: 1176887649}
@@ -7306,26 +7279,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sky
       objectReference: {fileID: 0}
-    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
-      propertyPath: maxHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
-      propertyPath: speed
-      value: 33
-      objectReference: {fileID: 0}
-    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
-      propertyPath: portrait
-      value: 
-      objectReference: {fileID: 21300000, guid: c0b9d29928db22c40aafb4d2c2e14a73, type: 3}
-    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
-      propertyPath: currentHP
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
-      propertyPath: dualStatePE
-      value: 
-      objectReference: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
     - target: {fileID: 8010472940516588041, guid: d11de07ffc83e0a4abb413cd1ddfe065, type: 3}
       propertyPath: battleCanvas
       value: 

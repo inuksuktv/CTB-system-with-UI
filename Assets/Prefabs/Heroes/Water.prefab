@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2264084737530558975}
   - component: {fileID: 2264084737530558972}
   - component: {fileID: 2264084737530558974}
+  - component: {fileID: 1512882544009982848}
   m_Layer: 0
   m_Name: Water
   m_TagString: Hero
@@ -96,8 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Water
-  currentHP: 25
-  maxHP: 60
+  currentHP: 100
+  maxHP: 100
   baseATK: 10
   currentATK: 10
   baseDEF: 5
@@ -110,14 +111,48 @@ MonoBehaviour:
   skyTokens: 0
   dualState: 0
   initiative: 0
-  simulatedInitiative: 0
   attackList:
   - {fileID: 11400000, guid: ab9f02ab62763334283f92e12fafbf7d, type: 2}
   - {fileID: 11400000, guid: 035fd2c6be75af742819d2d244dce2ce, type: 2}
   - {fileID: 11400000, guid: 4ac2fd6d75a419141995e55ab3f68250, type: 2}
   - {fileID: 11400000, guid: 056ef8909cb66284ba37149ca60e5e5a, type: 2}
-  portrait: {fileID: 21300000, guid: f5ab3f534c1138f4786f23cd74103223, type: 3}
+  portrait: {fileID: 21300000, guid: ca542c7e561fad942a477a5692cfb2fc, type: 3}
   turnState: 0
+  myAttack:
+    attackerName: 
+    attackTargetName: 
+    description: 
+    attacker: {fileID: 0}
+    target: {fileID: 0}
+    chosenAttack: {fileID: 0}
   attackTarget: {fileID: 0}
   damagePopup: {fileID: 2051785677123566724, guid: 30876dddc486bfc4fbb9ebe800d02c1f, type: 3}
   battleCanvas: {fileID: 0}
+  dualStatePE: {fileID: 707878741121053405, guid: 17eea714c16dd264caa204ee1ce1c162, type: 3}
+  turnCounter: 0
+--- !u!61 &1512882544009982848
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2264084737530558973}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1.7069987, y: 1.7053334}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
