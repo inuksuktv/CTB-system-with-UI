@@ -17,18 +17,20 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
     }
     public TurnState turnState;
 
-    [SerializeField] private AttackHandler myAttack;
+    [SerializeField] protected AttackHandler myAttack;
     public GameObject attackTarget;
     protected bool actionStarted;
     private float animationSpeed = 20f;
     protected Vector2 startPosition;
+    [SerializeField] protected Attack extendingAttack;
+    public bool wasExtended;
 
     [SerializeField] private GameObject damagePopup;
     [SerializeField] private RectTransform battleCanvas;
     [SerializeField] private GameObject dualStatePE;
     protected GameObject dualStateEffect;
     [SerializeField] protected int turnCounter;
-    protected readonly int dualStateTurns = 2;
+    protected readonly int dualStateTurns = 1;
 
     protected bool alive = true;
 
@@ -79,10 +81,12 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         myAttack.target = BSM.heroesInBattle[Random.Range(0, BSM.heroesInBattle.Count)];
         myAttack.chosenAttack = attackList[Random.Range(0, attackList.Count)];
 
-        turnCounter--;
+        // Check if we should end dualState.
         if (turnCounter == 0 && dualStateEffect != null) { 
             Destroy(dualStateEffect);
             stateCharge = 0;
+            dualState = false;
+            wasExtended = false;
         }
         turnState = TurnState.Acting;
     }
@@ -98,8 +102,9 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
             GetComponent<SpriteRenderer>().color = Color.black;
 
-            // Recalculate the turnQueue. Is it finally time to grapple with the GUI?
-            BSM.turnQueue.Remove(gameObject);
+            if (dualStateEffect != null) {
+                Destroy(dualStateEffect);
+            }
 
             alive = false;
 
@@ -119,6 +124,7 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 2f);
         foreach (Collider2D unit in hitColliders) {
             UnitStateMachine script = unit.transform.GetComponent<UnitStateMachine>();
+
             if (unit.gameObject != gameObject && script.dualState == true) {
                 script.StartCoroutine("ExtraAttack");
             }
@@ -132,6 +138,25 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
         initiative -= BSM.turnThreshold;
 
         DoDamage(myAttack);
+
+        // Count turns inside of dualState.
+        if (dualState == true) {
+            if (myAttack.chosenAttack == extendingAttack && wasExtended == false) {
+                wasExtended = true;
+            }
+            else {
+                turnCounter--;
+            }
+        }
+
+        // Add stateCharge and enter dualState.
+        stateCharge = Mathf.Clamp(stateCharge + myAttack.chosenAttack.stateCharge, 0, 100);
+
+        if (stateCharge == 100 && dualState == false) {
+            dualState = true;
+            dualStateEffect = Instantiate(dualStatePE, transform);
+            turnCounter = dualStateTurns;
+        }
 
         Vector2 firstPosition = startPosition;
         while (MoveBack(firstPosition)) { yield return null; }
@@ -160,24 +185,19 @@ public class UnitStateMachine : BaseUnit, IPointerClickHandler
 
     private void DoDamage (AttackHandler attackHandler)
     {
-        stateCharge = Mathf.Clamp(stateCharge + attackHandler.chosenAttack.stateCharge, 0, 100);
-
-        if (stateCharge == 100 && turnCounter <= 0) {
-            dualState = true;
-            dualStateEffect = Instantiate(dualStatePE, transform);
-            turnCounter = dualStateTurns;
-        }
-
+        // Calculate attack damage. Double it in dualState.
         float calcDamage = currentATK + attackHandler.chosenAttack.attackDamage;
         if (dualState) {
             calcDamage *= 2;
         }
 
+        // Add tokens and deal damage.
         UnitStateMachine target = attackHandler.target.GetComponent<UnitStateMachine>();
         target.fireTokens += attackHandler.chosenAttack.fireTokens;
         target.waterTokens += attackHandler.chosenAttack.waterTokens;
         target.earthTokens += attackHandler.chosenAttack.earthTokens;
         target.skyTokens += attackHandler.chosenAttack.skyTokens;
+
         target.TakeDamage(calcDamage);
     }
 

@@ -9,11 +9,13 @@ public class HeroStateMachine : UnitStateMachine
         BSM.heroesToManage.Clear();
         BSM.heroesToManage.Add(gameObject);
 
-        turnCounter--;
         if (turnCounter == 0 && dualStateEffect != null) {
             Destroy(dualStateEffect);
             stateCharge = 0;
+            dualState = false;
+            wasExtended = false;
         }
+
         turnState = TurnState.Idle;
     }
 
@@ -28,7 +30,9 @@ public class HeroStateMachine : UnitStateMachine
 
             GetComponent<SpriteRenderer>().color = Color.black;
 
-            // Recalculate the turnQueue. Is it finally time to grapple with the GUI?
+            if (dualStateEffect != null) {
+                Destroy(dualStateEffect);
+            }
 
             alive = false;
 
